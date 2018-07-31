@@ -44,3 +44,4 @@ Of course, this only works if your RetroPie has access to the configured cloud s
 ## Are there risks?
 
 Of course! I'm a hobby programer, so this script might have errors I just haven't found yet. I'll do my best to fix them, though.
+There are some things which just will not work with any sync, e. g. conflicting file changes. I strongly advice you to only change one side of each synced save file. In other words, don't play _Chrono Trigger_ on you RetroPie and on your PC simultaniously and expect to keep both save slots intact...
