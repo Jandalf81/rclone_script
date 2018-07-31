@@ -15,7 +15,7 @@ chmod 755 ~/scripts/rclone_script-install.sh
 ~/scripts/rclone_script-install.sh
 ```
 
-I recommend reading this page completely before actually doing this!
+I recommend reading this page completely before actually doing this! Also, I made [this IMGur album](https://imgur.com/a/nOFxP5Y) to show you the installation process and what happens afterwards.
 
 ## Again, what does this do?
 
@@ -31,3 +31,16 @@ Let me give you a rundown of the things this script will do:
 8. Now, the setup script will ask you to enter a name for the remote base save directory. This is the directory where the save files will be synced to. You can enter any name you like, I recommend calling it _RetroArch_. After naming it, the setup script will create this directory and one subdirectory for each system RetroPie supports (if necessary)
 9. Your RetroPie will be configured so each system uses it's own directory for saves. Before, RetroPie looked for these files in the _roms_ directory (which made syncing them without accidentially uploading a ROM - ILLEGALLY - so much more difficult)
 10. That's it, setup is complete. If you already have some save files within the _roms_ directory you need to move them to their subdirectory within the _saves_ directory now
+
+## What will RetroPie do after this script is installed?
+
+Whenever you start or stop playing a game, the acompanying save files will be down- or uploaded to the configured remote:
+
+* starting a game will trigger _RCLONE_ to download save files for the game from the remote
+* stopping a game will trigger _RCLONE_ to upload save files for the game to the remote
+
+Of course, this only works if your RetroPie has access to the configured cloud service.
+
+## Are there risks?
+
+Of course! I'm a hobby programer, so this script might have errors I just haven't found yet. I'll do my best to fix them, though.
