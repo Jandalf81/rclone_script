@@ -39,7 +39,9 @@ Whenever you start or stop playing a game, the acompanying save files will be do
 * starting a game will trigger _RCLONE_ to download save files for the game from the remote
 * stopping a game will trigger _RCLONE_ to upload save files for the game to the remote
 
-Of course, this only works if your RetroPie has access to the configured cloud service.
+In the RetroPie menu, there will also be a new menu item "_RCLONE_SCRIPT full sync_". Starting this menu item will up- and download newer files to and from the remote, so each side should have the latest save file for each game afterwards. Please note that this will also download save files even if the acompanying ROM is not on your RetroPie.
+
+Of course, all of this only works if your RetroPie has access to the configured cloud service.
 
 ## Are there risks?
 
