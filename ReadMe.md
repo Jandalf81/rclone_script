@@ -49,10 +49,10 @@ Of course, all of this only works if your RetroPie has access to the configured 
 Well, I have two big reasons:
 1. I wanted an offsite backup of my save files. I have started _Chrono Trigger_ so many times and always lost the save by tinkering with my RetroPie...
 2. I wanted to be able to seamlessly continue playing on another machine. Now I can...
-* start the game on RetroPie, play for an hour, save and automatically upload to DropBox
-* download the save file to Android via [DropSync](https://play.google.com/store/apps/details?id=com.ttxapps.dropsync&hl=de) and continue playing there via [RetroArch for Android](https://play.google.com/store/apps/details?id=com.retroarch) (don't forget to upload afterwards!)
-* continue playing on my PC which is synced automatically cia the DropBox client (which also uploads again automatically)
-* then return to RetroPie, which auto-downloads the save when I start the game there
+   * start the game on RetroPie, play for an hour, save and automatically upload to DropBox
+   * download the save file to Android via [DropSync](https://play.google.com/store/apps/details?id=com.ttxapps.dropsync&hl=de) and continue playing there via [RetroArch for Android](https://play.google.com/store/apps/details?id=com.retroarch) (don't forget to upload afterwards!)
+   * continue playing on my PC which is synced automatically via the DropBox client (which also uploads again automatically)
+   * then return to RetroPie, which auto-downloads the save when I start the game there
 
 ## Are there risks?
 
