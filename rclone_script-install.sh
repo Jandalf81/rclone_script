@@ -519,6 +519,7 @@ saveConfiguration ()
 	printf "${NORMAL}Saving configuration of RCLONE_SCRIPT... "
 	echo "remotebasedir=${remotebasedir}" > ~/scripts/rclone_script.ini
 	echo "logfile=~/scripts/rclone_script.log" >> ~/scripts/rclone_script.ini
+	echo "debug=0" >> ~/scripts/rclone_script.ini
 	printf "${GREEN}Done\n"
 }
 
