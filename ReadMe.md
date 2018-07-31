@@ -14,6 +14,7 @@ wget -N -P ~/scripts https://raw.githubusercontent.com/Jandalf81/rclone_script/m
 chmod 755 ~/scripts/rclone_script-install.sh
 ~/scripts/rclone_script-install.sh
 ```
+and follow the instructions.
 
 I recommend reading this page completely before actually doing this! Also, I made [this IMGur album](https://imgur.com/a/nOFxP5Y) to show you the installation process and what happens afterwards.
 
@@ -26,9 +27,9 @@ Let me give you a rundown of the things this script will do:
 3. Then, _PNGVIEW_ will be downloaded, compiled and installed. That will be used to show you notifications when up- and downloading save files.
 4. _IMAGEMAGICK_ will be installed via _apt-get_, this will be used to actually create images containing the notifications which are shown by _PNGVIEW_
 5. The other scripts you see here will now be downloaded. They are used to control _RCLONE_ whenever it needs to sync your save files. Notice that there's also a script to remove all of this from your RetroPie.
-6. Some scripts from RetroPie will be changed so they call one of the scripts from step 5 which then calls _RCLONE_... Sounds complicated but you don't have to do anything
-7. Right next to the _roms_ directory, a new directory _saves_ will be created, containing a subdirectoryfor each system
-8. Now, the setup script will ask you to enter a name for the remote base save directory. This is the directory where the save files will be synced to. You can enter any name you like, I recommend calling it _RetroArch_. After naming it, the setup script will create this directory and one subdirectory for each system RetroPie supports (if necessary)
+6. Some scripts from RetroPie will be changed so they call one of the scripts from step 5 which then calls _RCLONE_... Sounds complicated but you don't have to do anything (for the curious: those are the _RUNCOMMAND-ONSTART_ and _RUNCOMMAND-ONEND_ scripts)
+7. Right next to the _roms_ directory, a new directory _saves_ will be created, containing a subdirectory for each system
+8. Now, the setup script will ask you to enter a name for the remote base save directory. This is the directory where the save files will be synced to. You can enter any name you like, I recommend calling it _RetroArch_. After naming it, the setup script will create this directory and one subdirectory for each system RetroPie supports at the remote destination (if necessary)
 9. Your RetroPie will be configured so each system uses it's own directory for saves. Before, RetroPie looked for these files in the _roms_ directory (which made syncing them without accidentially uploading a ROM - ILLEGALLY - so much more difficult)
 10. That's it, setup is complete. If you already have some save files within the _roms_ directory you need to move them to their subdirectory within the _saves_ directory now
 
@@ -42,6 +43,16 @@ Whenever you start or stop playing a game, the acompanying save files will be do
 In the RetroPie menu, there will also be a new menu item "_RCLONE_SCRIPT full sync_". Starting this menu item will up- and download newer files to and from the remote, so each side should have the latest save file for each game afterwards. Please note that this will also download save files even if the acompanying ROM is not on your RetroPie.
 
 Of course, all of this only works if your RetroPie has access to the configured cloud service.
+
+## Why do this?
+
+Well, I have two big reasons:
+1. I wanted an offsite backup of my save files. I have started _Chrono Trigger_ so many times and always lost the save by tinkering with my RetroPie...
+2. I wanted to be able to seamlessly continue playing on another machine. Now I can...
+** start the game on RetroPie, play for an hour, save and automatically upload to DropBox
+** download the save file to Android via [DropSync](https://play.google.com/store/apps/details?id=com.ttxapps.dropsync&hl=de) and continue playing there via [RetroArch for Android](https://play.google.com/store/apps/details?id=com.retroarch) (don't forget to upload afterwards!)
+** continue playing on my PC which is synced automatically cia the DropBox client (which also uploads again automatically)
+** then return to RetroPie, which auto-downloads the save when I start the game there
 
 ## Are there risks?
 
