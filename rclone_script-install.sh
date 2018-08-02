@@ -246,7 +246,7 @@ installRCLONE_SCRIPT ()
 	printf "${NORMAL}   Getting RCLONE_SCRIPT... "
 
 	{ # try
-		retval=$(wget -q -N -P ~/scripts ${url}/{$branch}/rclone_script.sh 2>&1) &&
+		retval=$(wget -q -N -P ~/scripts ${url}/${branch}/rclone_script.sh 2>&1) &&
 		retval=$(sudo chmod 755 ~/scripts/rclone_script.sh 2>&1) &&
 
 		printf "${GREEN}Done\n"
@@ -259,7 +259,7 @@ installRCLONE_SCRIPT ()
 	printf "${NORMAL}   Getting RCLONE_SCRIPT-FULLSYNC... "
 		
 	{ # try
-		retval=$(wget -q -N -P ~/RetroPie/retropiemenu ${url}/{$branch}/rclone_script-fullsync.sh 2>&1) &&
+		retval=$(wget -q -N -P ~/RetroPie/retropiemenu ${url}/${branch}/rclone_script-fullsync.sh 2>&1) &&
 		retval=$(sudo chmod 755 ~/RetroPie/retropiemenu/rclone_script-fullsync.sh 2>&1) &&
 		
 		printf "${GREEN}Done\n"
