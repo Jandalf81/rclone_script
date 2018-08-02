@@ -1,3 +1,3 @@
 #!/bin/bash
 
-~/scripts/rclone_script "full"
+~/scripts/rclone_script.sh "full"
