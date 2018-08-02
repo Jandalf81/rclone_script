@@ -63,7 +63,7 @@ There are some things which just will not work with any sync, e. g. conflicting 
 
 First of all: You don't have to. I made this script for myself first of all. I'm happy already if someone else can use it. I only ask you to report any problems or feature requests here.
 
-If you _really_ want to thank me, you could use this [DropBox referral link](https://db.tt/9AcbUWny) to create your account there. This will give us both 500 MiB extra (on top of the default 2 GiB) when you install the DropBox client.
+If you _really_ want to thank me, you could use this [DropBox referral link](https://db.tt/9AcbUWny) to create your account there. This will give us both 500 MiB extra (on top of the default 2 GiB) when you install the DropBox client. That will be enough for a good number of save files... ;-)
 
 ## Sources
 
