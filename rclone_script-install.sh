@@ -11,7 +11,7 @@ UNDERLINE=$(tput smul)
 
 
 # global variables
-url="https://github.com/Jandalf81/rclone_script/blob"
+url="https://raw.githubusercontent.com/Jandalf81/rclone_script"
 branch="master"
 remotebasedir = ""
 
