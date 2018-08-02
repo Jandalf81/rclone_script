@@ -11,6 +11,8 @@ UNDERLINE=$(tput smul)
 
 
 # global variables
+url="https://github.com/Jandalf81/rclone_script/blob"
+branch="master"
 remotebasedir = ""
 
 beta="$1"
@@ -246,7 +248,7 @@ installRCLONE_SCRIPT ()
 	printf "${NORMAL}   Getting RCLONE_SCRIPT... "
 
 	{ # try
-		retval=$(wget -q -N -P ~/scripts https://www.dropbox.com/s/1ksthbt2ihw67h4/rclone_script.sh 2>&1) &&
+		retval=$(wget -q -N -P ~/scripts ${url}/{$branch}/rclone_script.sh 2>&1) &&
 		retval=$(sudo chmod 755 ~/scripts/rclone_script.sh 2>&1) &&
 
 		printf "${GREEN}Done\n"
@@ -265,7 +267,7 @@ installRCLONE_SCRIPT ()
 		printf "${NORMAL}   Getting RCLONE_SCRIPT-FULLSYNC... "
 			
 		{ # try
-			retval=$(wget -q -N -P ~/RetroPie/retropiemenu https://www.dropbox.com/s/vz4jl01zkryx0id/rclone_script-fullsync.sh 2>&1) &&
+			retval=$(wget -q -N -P ~/RetroPie/retropiemenu ${url}/{$branch}/rclone_script-fullsync.sh 2>&1) &&
 			retval=$(sudo chmod 755 ~/RetroPie/retropiemenu/rclone_script-fullsync.sh 2>&1) &&
 			
 			printf "${GREEN}Done\n"
@@ -300,7 +302,7 @@ installRCLONE_SCRIPT ()
 	printf "${NORMAL}   Getting UNINSTALL script... "
 		
 	{ # try
-		retval=$(wget -q -N -P ~/scripts https://www.dropbox.com/s/qrysm9gxb87081k/rclone_script-uninstall.sh 2>&1) &&
+		retval=$(wget -q -N -P ~/scripts ${url}/{$branch}/rclone_script-uninstall.sh 2>&1) &&
 		retval=$(sudo chmod 755 ~/scripts/rclone_script-uninstall.sh 2>&1) &&
 		
 		printf "${GREEN}Done\n"
