@@ -15,8 +15,6 @@ url="https://raw.githubusercontent.com/Jandalf81/rclone_script"
 branch="master"
 remotebasedir = ""
 
-beta="$1"
-
 
 header ()
 {
@@ -257,46 +255,37 @@ installRCLONE_SCRIPT ()
 		exit
 	}
 	
+	# download RCLONE_SCRIPT-FULLSYNC script
+	printf "${NORMAL}   Getting RCLONE_SCRIPT-FULLSYNC... "
+		
+	{ # try
+		retval=$(wget -q -N -P ~/RetroPie/retropiemenu ${url}/{$branch}/rclone_script-fullsync.sh 2>&1) &&
+		retval=$(sudo chmod 755 ~/RetroPie/retropiemenu/rclone_script-fullsync.sh 2>&1) &&
+		
+		printf "${GREEN}Done\n"
+	} || { # catch
+		printf "${RED}ERROR: ${retval}\n"
+		exit
+	}
 	
-# ONLY DO WHEN $beta IS 1
-	if [ "${beta}" = "1" ]
+	# test for RCLONE_SCRIPT-FULLSYNC menu item
+	printf "${NORMAL}   Testing for RCLONE_SCRIPT-FULLSYNC menu item... "
+	
+	if grep -Fq "<path>./rclone_script-fullsync.sh</path>" ~/.emulationstation/gamelists/retropie/gamelist.xml
 	then
-		printf "${RED}BEGIN OF BETA${NORMAL}!\n"
+		printf "${GREEN}Found\n"
+	else
+		printf "${YELLOW}Not found\n"
 		
-		# download RCLONE_SCRIPT-FULLSYNC script
-		printf "${NORMAL}   Getting RCLONE_SCRIPT-FULLSYNC... "
-			
-		{ # try
-			retval=$(wget -q -N -P ~/RetroPie/retropiemenu ${url}/{$branch}/rclone_script-fullsync.sh 2>&1) &&
-			retval=$(sudo chmod 755 ~/RetroPie/retropiemenu/rclone_script-fullsync.sh 2>&1) &&
-			
-			printf "${GREEN}Done\n"
-		} || { # catch
-			printf "${RED}ERROR: ${retval}\n"
-			exit
-		}
+		# create menu item
+		printf "${NORMAL}   Creating menu item for RCLONE_SCRIPT-FULLSYNC... "
+		menuitem="\t<game>\n"
 		
-		# test for RCLONE_SCRIPT-FULLSYNC menu item
-		printf "${NORMAL}   Testing for RCLONE_SCRIPT-FULLSYNC menu item... "
+		sed -i "/<\/gameList>/c\\\\t<game>\n\t\t<path>.\/rclone_script-fullsync.sh<\/path>\n\t\t<name>RCLONE_SCRIPT full sync<\/name>\n\t\t<desc>Starts a synchronization of all save files<\/desc>\n\t\t<image></image>\n\t<\/game>\n<\/gameList>" ~/.emulationstation/gamelists/retropie/gamelist.xml
 		
-		if grep -Fq "<path>./rclone_script-fullsync.sh</path>" ~/.emulationstation/gamelists/retropie/gamelist.xml
-		then
-			printf "${GREEN}Found\n"
-		else
-			printf "${YELLOW}Not found\n"
-			
-			# create menu item
-			printf "${NORMAL}   Creating menu item for RCLONE_SCRIPT-FULLSYNC... "
-			menuitem="\t<game>\n"
-			
-			sed -i "/<\/gameList>/c\\\\t<game>\n\t\t<path>.\/rclone_script-fullsync.sh<\/path>\n\t\t<name>RCLONE_SCRIPT full sync<\/name>\n\t\t<desc>Starts a synchronization of all save files<\/desc>\n\t\t<image></image>\n\t<\/game>\n<\/gameList>" ~/.emulationstation/gamelists/retropie/gamelist.xml
-			
-			printf "${GREEN}Done\n"
-		fi
-		
-		printf "${RED}END OF BETA${NORMAL}!\n"
+		printf "${GREEN}Done\n"
+
 	fi	
-# END OF BETA	
 
 	# download uninstall script
 	printf "${NORMAL}   Getting UNINSTALL script... "
@@ -550,14 +539,9 @@ footer ()
 	printf "If you already have some saves in the ROM directories,\n"
 	printf "you need to move them there manually!\n"
 	printf "After moving your saves you should ${RED}reboot ${NORMAL}your RetroPie.\n"
-	
-	if [ "${beta}" = "1" ]
-	then
-		printf "\n"
-		printf "Then, you should start a full sync via\n"
-		printf "${YELLOW}RetroPie / RCLONE_SCRIPT FULL SYNC\n"
-	fi
-	
+	printf "\n"
+	printf "Then, you should start a full sync via\n"
+	printf "${YELLOW}RetroPie / RCLONE_SCRIPT FULL SYNC\n"
 	printf "\n"
 	printf "${NORMAL}Call \"${RED}~/scripts/rclone_script-uninstall.sh${NORMAL}\" to remove\n"
 	printf "all or parts of this script\n"
