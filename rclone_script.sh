@@ -19,7 +19,6 @@ log ()
 
 debug ()
 {
-	log "DEBUG" "Started a ROM"
 	log "DEBUG" "direction: ${direction}"
 	log "DEBUG" "system: ${system}"
 	log "DEBUG" "emulator: ${emulator}"
@@ -38,11 +37,12 @@ killOtherNotification ()
 	# get PID of other PNGVIEW process
 	otherPID=$(pgrep --full pngview)
 	
-log "DEBUG" "Other PIDs: ${otherPID}"
+	if [ "${debug}" = "1" ]; then log "DEBUG" "Other PIDs: ${otherPID}"; fi
 
 	if [ "${otherPID}" != "" ]
 	then
-log "DEBUG" "Kill other PNGVIEW ${otherPID}"
+		if [ "${debug}" = "1" ]; then log "DEBUG" "Kill other PNGVIEW ${otherPID}"; fi
+		
 		kill ${otherPID}
 	fi
 }
@@ -60,7 +60,7 @@ showNotification ()
 
 	if [ "$3" = "" ]
 	then
-		timeout="5000"
+		timeout="10000"
 	else
 		timeout="$3"
 	fi
@@ -189,7 +189,7 @@ getROMFileName
 prepareFilter
 getTypeOfRemote
 
-#debug
+if [ "${debug}" = "1" ]; then debug; fi
 
 if [ "${direction}" == "up" ]
 then
