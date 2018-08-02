@@ -289,6 +289,8 @@ installRCLONE_SCRIPT ()
 
 	# download uninstall script
 	printf "${NORMAL}   Getting UNINSTALL script... "
+echo "${url}/${branch}/rclone_script-uninstall.sh"
+echo "https://raw.githubusercontent.com/Jandalf81/rclone_script/master/rclone_script-uninstall.sh"
 		
 	{ # try
 		retval=$(wget -q -N -P ~/scripts ${url}/${branch}/rclone_script-uninstall.sh 2>&1) &&
