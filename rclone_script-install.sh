@@ -291,7 +291,7 @@ installRCLONE_SCRIPT ()
 	printf "${NORMAL}   Getting UNINSTALL script... "
 		
 	{ # try
-		retval=$(wget -q -N -P ~/scripts ${url}/{$branch}/rclone_script-uninstall.sh 2>&1) &&
+		retval=$(wget -q -N -P ~/scripts ${url}/${branch}/rclone_script-uninstall.sh 2>&1) &&
 		retval=$(sudo chmod 755 ~/scripts/rclone_script-uninstall.sh 2>&1) &&
 		
 		printf "${GREEN}Done\n"
