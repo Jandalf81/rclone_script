@@ -57,4 +57,20 @@ Well, I have two big reasons:
 ## Are there risks?
 
 Of course! I'm a hobby programer, so this script might have errors I just haven't found yet. I'll do my best to fix them, though.
-There are some things which just will not work with any sync, e. g. conflicting file changes. I strongly advice you to only change one side of each synced save file. In other words, don't play _Chrono Trigger_ on you RetroPie and on your PC simultaniously and expect to keep both save slots intact...
+There are some things which just will not work with any sync, e. g. conflicting file changes. I strongly advice you to only change one side of each synced save file. In other words, don't play _Chrono Trigger_ on you RetroPie and on your PC simultaneously and expect to keep both save slots intact...
+
+## This is great! How can I thank you?
+
+First of all: You don't have to. I made this script for myself first of all. I'm happy already if someone else can use it. I only ask you to report any problems or feature requests here.
+
+If you _really_ want to thank me, you could use this [DropBox referral link](https://db.tt/9AcbUWny) to create your account there. This will give us both 500 MiB extra (on top of the default 2 GiB) when you install the DropBox client.
+
+## Sources
+
+These are the sites I used as source:
+* https://rclone.org/dropbox/
+* https://rclone.org/commands/rclone_copy/
+* https://rclone.org/filtering/
+* https://github.com/RetroPie/RetroPie-Setup/wiki/Runcommand#runcommand-onstart-and-runcommand-onend-scripts
+* https://github.com/AndrewFromMelbourne/raspidmx
+* https://www.zeroboy.eu/tutorial-gbzbatterymonitor/
