@@ -118,6 +118,8 @@ removeRCLONE_SCRIPT-FULLSYNC ()
 
 removeLocalSaveDirectory ()
 {
+	# TODO: Issue #4: Move save files to default directories
+	
 	# remove base save directory
 	printf "${NORMAL}   Removing local base save directory... "
 	
@@ -128,6 +130,11 @@ removeLocalSaveDirectory ()
 	} || { #catch
 		printf "${RED}ERROR: ${retval}\n"
 	}
+}
+
+resetSavefileDirectories ()
+{
+	# TODO: Issue #4: Reset savefile directories in CFG to default
 }
 
 # main program

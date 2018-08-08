@@ -25,7 +25,7 @@ header ()
 	
 	if [ "${branch}" = "beta" ]
 	then
-		printf "${RED}!!! BETA !!!\n\n"
+		printf "${NORMAL}${RED}!!! BETA !!! Use at own risk\n\n"
 	fi
 }
 
