@@ -12,7 +12,7 @@ UNDERLINE=$(tput smul)
 
 # global variables
 url="https://raw.githubusercontent.com/Jandalf81/rclone_script"
-branch="master"
+branch="beta"
 remotebasedir = ""
 
 
@@ -22,6 +22,11 @@ header ()
 	clear
 	
 	printf "${UNDERLINE}Install script for cloud sync via RCLONE\n\n"
+	
+	if [ "${branch}" = "beta"]
+	then
+		printf "${RED}!!! BETA !!!\n\n"
+	fi
 }
 
 testRCLONE ()
