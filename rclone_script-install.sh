@@ -23,7 +23,7 @@ header ()
 	
 	printf "${UNDERLINE}Install script for cloud sync via RCLONE\n\n"
 	
-	if [ "${branch}" = "beta"]
+	if [ "${branch}" = "beta" ]
 	then
 		printf "${RED}!!! BETA !!!\n\n"
 	fi
