@@ -40,7 +40,6 @@ debug ()
 	log "DEBUG" "romfilename: ${romfilename}"
 	log "DEBUG" "romfilebase: ${romfilebase}"
 	log "DEBUG" "romfileext: ${romfileext}"
-	log "DEBUG" ""
 }
 
 killOtherNotification ()
@@ -223,18 +222,24 @@ if [ "${debug}" = "1" ]; then debug; fi
 
 if [ "${direction}" == "up" ]
 then
-	getROMFileName
-	prepareFilter
-	getTypeOfRemote
-	uploadSaves
+	if [ "${system}" != "kodi" ]
+	then
+		getROMFileName
+		prepareFilter
+		getTypeOfRemote
+		uploadSaves
+	fi
 fi
 
 if [ "${direction}" == "down" ]
 then
-	getROMFileName
-	prepareFilter
-	getTypeOfRemote
-	downloadSaves
+	if [ "${system}" != "kodi" ]
+	then
+		getROMFileName
+		prepareFilter
+		getTypeOfRemote
+		downloadSaves
+	fi
 fi
 
 if [ "${direction}" == "full" ]
