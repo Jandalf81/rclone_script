@@ -220,26 +220,20 @@ doFullSync ()
 
 if [ "${debug}" = "1" ]; then debug; fi
 
-if [ "${direction}" == "up" ]
+if [ "${direction}" == "up" ] && [ "${system}" != "kodi" ]
 then
-	if [ "${system}" != "kodi" ]
-	then
-		getROMFileName
-		prepareFilter
-		getTypeOfRemote
-		uploadSaves
-	fi
+	getROMFileName
+	prepareFilter
+	getTypeOfRemote
+	uploadSaves
 fi
 
-if [ "${direction}" == "down" ]
+if [ "${direction}" == "down" ] && [ "${system}" != "kodi" ]
 then
-	if [ "${system}" != "kodi" ]
-	then
-		getROMFileName
-		prepareFilter
-		getTypeOfRemote
-		downloadSaves
-	fi
+	getROMFileName
+	prepareFilter
+	getTypeOfRemote
+	downloadSaves
 fi
 
 if [ "${direction}" == "full" ]
