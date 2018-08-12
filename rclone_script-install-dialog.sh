@@ -102,6 +102,43 @@ function installer ()
 		1dCreateRCLONEremote
 		updateStep "1d" "done" 20
 	fi
+	
+# 2a. Testing for PNGVIEW binary
+	updateStep "2a" "in progress" 20
+	
+	2aTestPNGVIEW
+	if [[ $? -eq 0 ]]
+	then
+		updateStep "2a" "found" 25
+		updateStep "2b" "skipped" 30
+		updateStep "2c" "skipped" 35
+	else
+		updateStep "2a" "not found" 25
+
+# 2b. Getting PNGVIEW source
+		updateStep "2b" "in progress" 25
+		
+		2bGetPNGVIEWsource
+		if [[ $? -eq 0 ]]
+		then
+			updateStep "2b" "done" 30
+			
+# 2c. Compiling PNGVIEW
+			updateStep "2c" "in progress" 30
+			
+			2cCompilePNGVIEW
+			if [[ $? -eq 0 ]]
+			then
+				updateStep "2c" "done" 35
+			else
+				updateStep "2c" "failed" 30
+				exit
+			fi
+		else
+			updateStep "2b" "failed" 25
+			exit
+		fi
+	fi
 }
 
 
@@ -166,6 +203,9 @@ function dialogShowProgress ()
 	local percent="$1"
 	
 	buildProgress
+	
+	clear
+	clear
 	
 	echo "${percent}" | dialog \
 		--stdout \
@@ -234,10 +274,14 @@ function updateStep ()
 # 	1 > RCLONE is not installed
 function 1aTestRCLONE ()
 {
+	printf "$(date +%FT%T%:z):\t1aTestRCLONE\tSTART\n" >> ./rclone_script-install.log
+	
 	if [ -f /usr/bin/rclone ]
 	then
+		printf "$(date +%FT%T%:z):\t1aTestRCLONE\tFOUND\n" >> ./rclone_script-install.log
 		return 0
 	else
+		printf "$(date +%FT%T%:z):\t1aTestRCLONE\tNOT FOUND\n" >> ./rclone_script-install.log
 		return 1
 	fi
 }
@@ -248,30 +292,36 @@ function 1aTestRCLONE ()
 #	1 > Error while installing RCLONE
 function 1bInstallRCLONE ()
 {
+	printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tSTART\n" >> ./rclone_script-install.log
+	
 	# TODO get RCLONE for 64bit
 	{ # try
 		# get binary
-		wget -q -P ~ https://downloads.rclone.org/rclone-current-linux-arm.zip &&
-		unzip -q ~/rclone-current-linux-arm.zip -d ~ &&
+		wget -P ~ https://downloads.rclone.org/rclone-current-linux-arm.zip --append-output=./rclone_script-install.log &&
+		unzip ~/rclone-current-linux-arm.zip -d ~ >> ./rclone_script-install.log &&
 		
 		cd ~/rclone-v* &&
 
 		# move binary
-		retval=$(sudo mv rclone /usr/bin 2>&1) &&
-		retval=$(sudo chown root:root /usr/bin/rclone 2>&1) &&
-		retval=$(sudo chmod 755 /usr/bin/rclone 2>&1) &&
+		sudo mv rclone /usr/bin >> ./rclone_script-install.log &&
+		sudo chown root:root /usr/bin/rclone >> ./rclone_script-install.log &&
+		sudo chmod 755 /usr/bin/rclone >> ./rclone_script-install.log &&
 		
 		cd ~ &&
 		
 		# remove temp files
-		rm ~/rclone-current-linux-arm.zip > /dev/null &&
-		rm -r ~/rclone-v* > /dev/null &&
+		rm ~/rclone-current-linux-arm.zip >> ./rclone_script-install.log &&
+		rm -r ~/rclone-v* >> ./rclone_script-install.log &&
+		
+		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tDONE\n" >> ./rclone_script-install.log
 		
 		return 0
 	} || { #catch
+		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tERROR\n" >> ./rclone_script-install.log
+		
 		# remove temp files
-		rm ~/rclone-current-linux-arm.zip > /dev/null &&
-		rm -r ~/rclone-v* > /dev/null &&
+		rm ~/rclone-current-linux-arm.zip >> ./rclone_script-install.log &&
+		rm -r ~/rclone-v* >> ./rclone_script-install.log &&
 		
 		return 1
 	}
@@ -283,14 +333,18 @@ function 1bInstallRCLONE ()
 #	1 > no remote RETROPIE found
 function 1cTestRCLONEremote ()
 {
+	printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tSTART\n" >> ./rclone_script-install.log
+	
 	local remotes=$(rclone listremotes)
 	
 	local retval=$(grep -i "^retropie:" <<< ${remotes})
 	
 	if [ "${retval}" == "retropie:" ]
 	then
+		printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tFOUND\n" >> ./rclone_script-install.log
 		return 0
 	else
+		printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tNOT FOUND\n" >> ./rclone_script-install.log
 		return 1
 	fi
 }
@@ -300,6 +354,8 @@ function 1cTestRCLONEremote ()
 #	0 > remote RETROPIE has been created (no other OUTPUT possible)
 function 1dCreateRCLONEremote ()
 {
+	printf "$(date +%FT%T%:z):\t1dCreateRCLONEremote\tSTART\n" >> ./rclone_script-install.log
+	
 	dialog \
 		--stdout \
 		--colors \
@@ -329,8 +385,89 @@ function 1dCreateRCLONEremote ()
 			
 		1dCreateRCLONEremote
 	else
+		printf "$(date +%FT%T%:z):\t1dCreateRCLONEremote\tFOUND\n" >> ./rclone_script-install.log
 		return 0
 	fi	
+}
+
+# Checks if PNGVIEW is installed
+# RETURN
+#	0 > PNGVIEW is installed
+#	1 > PNGVIEW is not installed
+function 2aTestPNGVIEW ()
+{
+	printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tSTART\n" >> ./rclone_script-install.log
+	
+	if [ -f /usr/bin/pngview ]
+	then
+		printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tFOUND\n" >> ./rclone_script-install.log
+		return 0
+	else
+		printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tNOT FOUND\n" >> ./rclone_script-install.log
+		return 1
+	fi
+}
+
+# Gets PNGVIEW source
+# RETURN
+#	0 > source downloaded and unzipped
+#	1 > no source downloaded, removed temp files
+function 2bGetPNGVIEWsource ()
+{
+	printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tSTART\n" >> ./rclone_script-install.log
+	
+	{ #try
+		wget -P ~ https://github.com/AndrewFromMelbourne/raspidmx/archive/master.zip --append-output=./rclone_script-install.log &&
+		unzip ~/master.zip -d ~ >> ./rclone_script-install.log &&
+		
+		printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tDONE\n" >> ./rclone_script-install.log &&
+	
+		return 0
+	} || { #catch
+		printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tERROR\n" >> ./rclone_script-install.log &&
+		
+		rm ~/master.zip >> ./rclone_script-install.log &&
+		sudo rm -r ~/raspidmx-master >> ./rclone_script-install.log &&
+	
+		return 1
+	}
+}
+
+# Compiles PNGVIEW source, moves binaries
+# RETURN
+#	0 > compiled without errors, moved binaries, removed temp files
+#	1 > errors while compiling, removed temp files
+function 2cCompilePNGVIEW ()
+{
+	printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tSTART\n" >> ./rclone_script-install.log
+	
+	{ #try
+		# compile
+		# cd ~/raspidmx-master &&
+		make --directory=~/raspidmx-master >> ./rclone_script-install.log &&
+	
+		# move binary files
+		sudo mv ~/raspidmx-master/pngview/pngview /usr/bin >> ./rclone_script-install.log &&
+		sudo mv ~/raspidmx-master/lib/libraspidmx.so.1 /usr/lib >> ./rclone_script-install.log &&
+		sudo chown root:root /usr/bin/pngview >> ./rclone_script-install.log &&
+		sudo chmod 755 /usr/bin/pngview >> ./rclone_script-install.log &&
+		
+		# remove temp files
+		rm ~/master.zip >> ./rclone_script-install.log &&
+		sudo rm -r ~/raspidmx-master >> ./rclone_script-install.log &&
+		
+		printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tDONE\n" >> ./rclone_script-install.log &&
+	
+		return 0
+	} || { #catch
+		printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tERROR\n" >> ./rclone_script-install.log &&
+	
+		# remove temp files
+		rm ~/master.zip >> ./rclone_script-install.log &&
+		sudo rm -r ~/raspidmx-master >> ./rclone_script-install.log &&
+		
+		return 1
+	}
 }
 
 
