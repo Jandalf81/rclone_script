@@ -1097,7 +1097,7 @@ function 9aSaveConfiguration ()
 	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tSTART\n" >> ./rclone_script-install.log
 	
 	echo "remotebasedir=${remotebasedir}" > ~/scripts/rclone_script/rclone_script.ini
-	echo "shownotifications=${shownotifications}" > ~/scripts/rclone_script/rclone_script.ini
+	echo "shownotifications=${shownotifications}" >> ~/scripts/rclone_script/rclone_script.ini
 	echo "logfile=~/scripts/rclone_script.log" >> ~/scripts/rclone_script/rclone_script.ini
 	echo "debug=0" >> ~/scripts/rclone_script/rclone_script.ini
 	
