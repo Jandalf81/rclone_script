@@ -58,87 +58,13 @@ function dialogBetaWarning ()
 # Installer
 function installer ()
 {
-	local retval
-	
 	initSteps
 	dialogShowProgress 0
 	
-# 1a. Testing for RCLONE binary
-	updateStep "1a" "in progress" 0
-	
-	1aTestRCLONE
-	if [[ $? -eq 0 ]]
-	then
-		updateStep "1a" "found" 5
-		updateStep "1b" "skipped" 10
-	else
-		updateStep "1a" "not found" 5
-		
-# 1b. Getting RCLONE binary
-		updateStep "1b" "in progress" 5
-		
-		1bInstallRCLONE
-		if [[ $? -eq 0 ]]
-		then
-			updateStep "1b" "done" 10
-		else
-			updateStep "1b" "failed" 5
-		fi
-	fi
-	
-# 1c. Testing RCLONE configuration
-	updateStep "1c" "in progress" 10
-	
-	1cTestRCLONEremote
-	if [[ $? -eq 0 ]]
-	then
-		updateStep "1c" "found" 15
-		updateStep "1d" "skipped" 20
-	else
-		updateStep "1c" "not found" 15
-		
-# 1d. Create RCLONE remote
-		updateStep "1d" "in progress" 15
-		1dCreateRCLONEremote
-		updateStep "1d" "done" 20
-	fi
-	
-# 2a. Testing for PNGVIEW binary
-	updateStep "2a" "in progress" 20
-	
-	2aTestPNGVIEW
-	if [[ $? -eq 0 ]]
-	then
-		updateStep "2a" "found" 25
-		updateStep "2b" "skipped" 30
-		updateStep "2c" "skipped" 35
-	else
-		updateStep "2a" "not found" 25
-
-# 2b. Getting PNGVIEW source
-		updateStep "2b" "in progress" 25
-		
-		2bGetPNGVIEWsource
-		if [[ $? -eq 0 ]]
-		then
-			updateStep "2b" "done" 30
-			
-# 2c. Compiling PNGVIEW
-			updateStep "2c" "in progress" 30
-			
-			2cCompilePNGVIEW
-			if [[ $? -eq 0 ]]
-			then
-				updateStep "2c" "done" 35
-			else
-				updateStep "2c" "failed" 30
-				exit
-			fi
-		else
-			updateStep "2b" "failed" 25
-			exit
-		fi
-	fi
+	1RCLONE
+	2PNGVIEW
+	3IMAGEMAGICK
+	4RCLONE_SCRIPT
 }
 
 
@@ -268,6 +194,49 @@ function updateStep ()
 	dialogShowProgress ${percent}
 }
 
+function 1RCLONE () 
+{
+# 1a. Testing for RCLONE binary
+	updateStep "1a" "in progress" 0
+	
+	1aTestRCLONE
+	if [[ $? -eq 0 ]]
+	then
+		updateStep "1a" "found" 5
+		updateStep "1b" "skipped" 10
+	else
+		updateStep "1a" "not found" 5
+		
+# 1b. Getting RCLONE binary
+		updateStep "1b" "in progress" 5
+		
+		1bInstallRCLONE
+		if [[ $? -eq 0 ]]
+		then
+			updateStep "1b" "done" 10
+		else
+			updateStep "1b" "failed" 5
+		fi
+	fi
+	
+# 1c. Testing RCLONE configuration
+	updateStep "1c" "in progress" 10
+	
+	1cTestRCLONEremote
+	if [[ $? -eq 0 ]]
+	then
+		updateStep "1c" "found" 15
+		updateStep "1d" "skipped" 20
+	else
+		updateStep "1c" "not found" 15
+		
+# 1d. Create RCLONE remote
+		updateStep "1d" "in progress" 15
+		1dCreateRCLONEremote
+		updateStep "1d" "done" 20
+	fi
+}
+
 # Checks if RCLONE is installed
 # RETURN
 # 	0 > RCLONE is installed
@@ -286,7 +255,7 @@ function 1aTestRCLONE ()
 	fi
 }
 
-# Installs RCLONE
+# Installs RCLONE by download
 # RETURN
 #	0 > RCLONE has been installed
 #	1 > Error while installing RCLONE
@@ -390,6 +359,46 @@ function 1dCreateRCLONEremote ()
 	fi	
 }
 
+function 2PNGVIEW ()
+{
+# 2a. Testing for PNGVIEW binary
+	updateStep "2a" "in progress" 20
+	
+	2aTestPNGVIEW
+	if [[ $? -eq 0 ]]
+	then
+		updateStep "2a" "found" 25
+		updateStep "2b" "skipped" 30
+		updateStep "2c" "skipped" 35
+	else
+		updateStep "2a" "not found" 25
+
+# 2b. Getting PNGVIEW source
+		updateStep "2b" "in progress" 25
+		
+		2bGetPNGVIEWsource
+		if [[ $? -eq 0 ]]
+		then
+			updateStep "2b" "done" 30
+			
+# 2c. Compiling PNGVIEW
+			updateStep "2c" "in progress" 30
+			
+			2cCompilePNGVIEW
+			if [[ $? -eq 0 ]]
+			then
+				updateStep "2c" "done" 35
+			else
+				updateStep "2c" "failed" 30
+				exit
+			fi
+		else
+			updateStep "2b" "failed" 25
+			exit
+		fi
+	fi
+}
+
 # Checks if PNGVIEW is installed
 # RETURN
 #	0 > PNGVIEW is installed
@@ -469,6 +478,168 @@ function 2cCompilePNGVIEW ()
 		return 1
 	}
 }
+
+function 3IMAGEMAGICK ()
+{
+# 3a. Testing for IMAGEMAGICK
+	updateStep "3a" "in progress" 35
+	
+	3aTestIMAGEMAGICK
+	if [[ $? -eq 0 ]]
+	then
+		updateStep "3a" "found" 40
+		updateStep "3b" "skipped" 45
+	else
+		updateStep "3a" "not found" 40
+		
+# 3b. Getting IMAGEMAGICK
+		updateStep "3b" "in progress" 40
+		3bInstallIMAGEMAGICK
+		if [[ $? -eq 0 ]]
+		then
+			updateStep "3b" "done" 45
+		else
+			updateStep "3b" "failed" 40
+		fi
+	fi
+}
+
+# Checks is IMAGEMAGICK is installed
+# RETURN
+#	0 > IMAGEMAGICK is installed
+#	1 > IMAGEMAGICK is not installed
+function 3aTestIMAGEMAGICK ()
+{
+	printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tSTART\n" >> ./rclone_script-install.log
+	
+	if [ -f /usr/bin/convert ]
+	then
+		printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tFOUND\n" >> ./rclone_script-install.log
+		return 0
+	else
+		printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tNOT FOUND\n" >> ./rclone_script-install.log
+		return 1
+	fi
+}
+
+# Installs IMAGEMAGICK via APT-GET
+# RETURN
+#	0 > IMAGEMAGICK has been installed
+#	1 > Error while installing IMAGEMAGICK
+function 3bInstallIMAGEMAGICK ()
+{
+	printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tSTART\n" >> ./rclone_script-install.log
+	
+	sudo apt-get update >> ./rclone_script-install.log &&
+	sudo apt-get --yes install imagemagick >> ./rclone_script-install.log &&
+	
+	if [[ $? -eq 0 ]]
+	then
+		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tDONE\n" >> ./rclone_script-install.log &&
+		return 0
+	else
+		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tERROR\n" >> ./rclone_script-install.log &&
+		return 1
+	fi
+}
+
+function 4RCLONE_SCRIPT ()
+{
+# 4a. Getting RCLONE_SCRIPT
+	updateStep "4a" "in progress" 45
+	
+	4aGetRCLONE_SCRIPT
+	if [[ $? -eq 0 ]]
+	then
+		updateStep "4a" "done" 50
+	else
+		updateStep "4a" "failed" 45
+		exit
+	fi
+
+# 4b. Creating RCLONE_SCRIPT menu item
+	updateStep "4b" "in progress" 50
+	
+	4bCreateRCLONE_SCRIPTMenuItem
+	if [[ $? -eq 0 ]]
+	then
+		updateStep "4b" "done" 55
+	else
+		updateStep "4b" "failed" 50
+		exit
+	fi
+
+# 4c. Configure RCLONE_SCRIPT
+}
+
+# Gets RCLONE_SCRIPT
+# RETURN
+#	0 > downloaded successfully
+#	1 > errors while downloading
+function 4aGetRCLONE_SCRIPT ()
+{
+	printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tSTART\n" >> ./rclone_script-install.log
+	
+	# create directory if necessary
+	if [ ! -d ~/scripts/rclone_script ]
+	then
+		mkdir ~/scripts/rclone_script >> ./rclone_script-install.log
+	fi
+	
+	{ #try
+		# get script files
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script.sh --append-output=./rclone_script-install.log &&
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-menu.sh --append-output=./rclone_script-install.log &&
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-uninstall.sh --append-output=./rclone_script-install.log &&
+		
+		# change mod
+		chmod +x ~/scripts/rclone_script/rclone_script.sh >> ./rclone_script-install.log &&
+		chmod +x ~/scripts/rclone_script/rclone_script-menu.sh >> ./rclone_script-install.log &&
+		chmod +x ~/scripts/rclone_script/rclone_script-uninstall.sh >> ./rclone_script-install.log &&
+		
+		printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tDONE\n" >> ./rclone_script-install.log &&
+		
+		return 0
+	} || { # catch
+		printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tERROR\n" >> ./rclone_script-install.log
+		
+		return 1
+	}
+}
+
+# Creates a menu item for RCLONE_SCRIPT in RetroPie menu
+# RETURN
+#	0 > menu item has been found or created
+#	1 > error while creating menu item
+function 4bCreateRCLONE_SCRIPTMenuItem ()
+{
+	printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tSTART\n" >> ./rclone_script-install.log
+	
+	# move menu script
+	mv --force ~/scripts/rclone_script/rclone_script-menu.sh ~/RetroPie/retropiemenu >> ./rclone_script-install.log
+	
+	# check if menu item exists
+	if grep -Fq "<path>./rclone_script-menu.sh</path>" ~/.emulationstation/gamelists/retropie/gamelist.xml
+	then
+		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tFOUND\n" >> ./rclone_script-install.log
+		return 0
+	else
+		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tNOT FOUND\n" >> ./rclone_script-install.log
+		
+		sed -i "/<\/gameList>/c\\\\t<game>\n\t\t<path>.\/rclone_script-menu.sh<\/path>\n\t\t<name>RCLONE_SCRIPT menu<\/name>\n\t\t<desc>Customize RCLONE_SCRIPT, start a full sync, uninstall RCLONE_SCRIPT<\/desc>\n\t\t<image></image>\n\t<\/game>\n<\/gameList>" ~/.emulationstation/gamelists/retropie/gamelist.xml
+		
+		if [[ $? -eq 0 ]]
+		then
+			printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tCREATED\n" >> ./rclone_script-install.log
+			return 0
+		else
+			printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tERROR\n" >> ./rclone_script-install.log
+			return 1
+		fi
+	fi
+}
+
+
 
 
 # main
