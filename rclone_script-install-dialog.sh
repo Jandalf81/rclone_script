@@ -126,7 +126,7 @@ function dialogShowSummary ()
 		--no-collapse \
 		--cr-wrap \
 		--yesno \
-			"\n${GREEN}All done!${NORMAL}\n\nFrom now on, all your saves and states will be synchronized each time you start or stop a ROM.\n\nAll system will put their saves and states in\n	Local: \"${YELLOW}~/RetroPie/saves/<SYSTEM>${NORMAL}\"\n	Remote: \"${YELLOW}retropie:${remotebasedir}/<SYSTEM> (${remoteType})${NORMAL}\"\nIf you already have some saves in the ROM directories, you need to move them there manually now! Afterward, you should ${red}reboot${NORMAL} your RetroPie. Then, you should start a full sync via\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 1 Full sync${NORMAL}\n\nCall\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 9 uninstall${NORMAL}\n to remove all or parts of this script.\n\n${RED}Reboot RetroPie now?${NORMAL}" 25 90
+			"\n${GREEN}All done!${NORMAL}\n\nFrom now on, all your saves and states will be synchronized each time you start or stop a ROM.\n\nAll system will put their saves and states in\n	Local: \"${YELLOW}~/RetroPie/saves/<SYSTEM>${NORMAL}\"\n	Remote: \"${YELLOW}retropie:${remotebasedir}/<SYSTEM>\" (${remoteType})${NORMAL}\nIf you already have some saves in the ROM directories, you need to move them there manually now! Afterward, you should ${red}reboot${NORMAL} your RetroPie. Then, you should start a full sync via\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 1 Full sync${NORMAL}\n\nCall\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 9 uninstall${NORMAL}\nto remove all or parts of this script.\n\n${RED}Reboot RetroPie now?${NORMAL}" 25 90
 	
 	case $? in
 		0) sudo shutdown -r now  ;;
@@ -170,7 +170,7 @@ function initSteps ()
 	steps[24]="	7a. Check remote base directory			[ waiting...  ]"
 	steps[25]="	7b. Check remote <SYSTEM> directories		[ waiting...  ]"
 	steps[26]="8. Configure RETROARCH"
-	steps[27]="	8a. Setting local SAVEFILE directory		[ waiting...  ]"
+	steps[27]="	8a. Setting local SAVEFILE directories		[ waiting...  ]"
 	steps[28]="9. Finalizing"
 	steps[29]="	9a. Saving configuration			[ waiting...  ]"
 }

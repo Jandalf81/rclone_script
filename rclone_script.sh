@@ -10,7 +10,7 @@ UNDERLINE=$(tput smul)
 
 
 # include settings file
-source ~/scripts/rclone_script.ini
+source ~/scripts/rclone_script/rclone_script.ini
 
 
 # parameters
