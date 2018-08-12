@@ -33,8 +33,10 @@ function main_menu ()
 		
 		case "$choice" in
 			1) ~/scripts/rclone_script/rclone_script.sh "full"  ;;
-			9) ~/scripts/rclone_script/rclone_script-uninstall.sh
+			9) ~/scripts/rclone_script/rclone_script-uninstall.sh  ;;
 			*) break  ;;
 		esac
 	done
 }
+
+main_menu
