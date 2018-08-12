@@ -6,7 +6,7 @@ NORMAL="\Zn"
 BLACK="\Z0"
 RED="\Z1"
 GREEN="\Z2"
-YELLOW="\Z3"
+YELLOW="\Z3\Zb"
 BLUE="\Z4"
 MAGENTA="\Z5"
 CYAN="\Z6"
@@ -19,12 +19,17 @@ UNDERLINE="\Zu"
 # global variables
 url="https://raw.githubusercontent.com/Jandalf81/rclone_script"
 branch="beta"
-remotebasedir = ""
+
+# configuration variables
+remotebasedir=""
+shownotifications=""
 
 backtitle="RCLONE_SCRIPT installer"
 
 
-# Welcome dialog
+##################
+# WELCOME DIALOG #
+##################
 dialog \
 	--backtitle "${backtitle}" \
 	--title "Welcome" \
@@ -33,10 +38,14 @@ dialog \
 	--no-collapse \
 	--cr-wrap \
 	--yesno \
-		"\nThis script will configure RetroPie so that your savefiles and statefiles are synchronized with a remote destination. Several packages and scripts will be installed, see\n\n	https://github.com/Jandalf81/rclone_script/blob/master/ReadMe.md\n\nfor a rundown.\n\nAre you sure you wish to continue?" \
-	28 110 2>&1 > /dev/tty \
+		"\nThis script will configure RetroPie so that your savefiles and statefiles will be ${YELLOW}synchronized with a remote destination${NORMAL}. Several packages and scripts will be installed, see\n\n	https://github.com/Jandalf81/rclone_script/blob/master/ReadMe.md\n\nfor a rundown. In short, any time you ${GREEN}start${NORMAL} or ${RED}stop${NORMAL} a ROM the savefiles and savestates for that ROM will be ${GREEN}down-${NORMAL} and ${RED}uploaded${NORMAL} ${GREEN}from${NORMAL} and ${RED}to${NORMAL} a remote destination. To do so, RetroPie will be configured to put all savefiles and statefiles in distinct directories, seperated from the ROMS directories. If you already have some savefiles there, you will need to ${YELLOW}move them manually${NORMAL} after installation.\n\nAre you sure you wish to continue?" \
+	20 90 2>&1 > /dev/tty \
     || exit
+
 	
+####################
+# DIALOG FUNCTIONS #
+####################
 
 # Warn the user if they are using the BETA branch
 function dialogBetaWarning ()
@@ -52,56 +61,6 @@ function dialogBetaWarning ()
 			"\n${RED}${UNDERLINE}WARNING!${NORMAL}\n\nYou are about to install a beta version!\nAre you ${RED}REALLY${NORMAL} sure you want to continue?" \
 	10 50 2>&1 > /dev/tty \
     || exit
-}
-
-
-# Installer
-function installer ()
-{
-	initSteps
-	dialogShowProgress 0
-	
-	1RCLONE
-	2PNGVIEW
-	3IMAGEMAGICK
-	4RCLONE_SCRIPT
-}
-
-
-# Initialize array $STEPS()
-# OUTPUT
-#	$steps()
-function initSteps ()
-{
-	steps[1]="1. RCLONE"
-	steps[2]="	1a. Testing for RCLONE binary			[ waiting...  ]"
-	steps[3]="	1b. Getting RCLONE binary			[ waiting...  ]"
-	steps[4]="	1c. Testing RCLONE remote			[ waiting...  ]"
-	steps[5]="	1d. Create RCLONE remote			[ waiting...  ]"
-	steps[6]="2. PNGVIEW"
-	steps[7]="	2a. Testing for PNGVIEW binary			[ waiting...  ]"
-	steps[8]="	2b. Getting PNGVIEW source			[ waiting...  ]"
-	steps[9]="	2c. Compiling PNGVIEW				[ waiting...  ]"
-	steps[10]="3. IMAGEMAGICK"
-	steps[11]="	3a. Testing for IMAGEMAGICK			[ waiting...  ]"
-	steps[12]="	3b. Getting IMAGEMAGICK				[ waiting...  ]"
-	steps[13]="4. RCLONE_SCRIPT"
-	steps[14]="	4a. Getting RCLONE_SCRIPT			[ waiting...  ]"
-	steps[15]="	4b. Creating RCLONE_SCRIPT menu item		[ waiting...  ]"
-	steps[16]="	4c. Configure RCLONE_SCRIPT			[ waiting...  ]"
-	steps[17]="5. RUNCOMMAND"
-	steps[18]="	5a. RUNCOMMAND-ONSTART				[ waiting...  ]"
-	steps[19]="	5b. RUNCOMMAND-ONEND				[ waiting...  ]"
-	steps[20]="6. Local SAVEFILE directory"
-	steps[21]="	6a. Test for local SAVEFILE directory		[ waiting...  ]"
-	steps[22]="	6b. Create local SAVEFILE directory		[ waiting...  ]"
-	steps[23]="7. Remote SAVEFILE directory"
-	steps[24]="	7a. Test for local SAVEFILE directory		[ waiting...  ]"
-	steps[25]="	7b. Create local SAVEFILE directory		[ waiting...  ]"
-	steps[26]="8. Configure RETROARCH"
-	steps[27]="	8a. Setting local SAVEFILE directory		[ waiting...  ]"
-	steps[28]="9. Finalizing"
-	steps[29]="	9a. Saving configuration			[ waiting...  ]"
 }
 
 # Build progress from array $STEPS()
@@ -147,6 +106,75 @@ function dialogShowProgress ()
 	sleep 1
 }
 
+# Show summary dialog
+function dialogShowSummary ()
+{
+	# list all remotes and their type
+	remotes=$(rclone listremotes -l)
+	
+	# get line wiht RETROPIE remote
+	retval=$(grep -i "^retropie:" <<< ${remotes})
+
+	remoteType="${retval#*:}"
+	remoteType=$(echo ${remoteType} | xargs)
+
+	dialog \
+		--backtitle "${backtitle}" \
+		--title "Summary" \
+		--ascii-lines \
+		--colors \
+		--no-collapse \
+		--cr-wrap \
+		--yesno \
+			"\n${GREEN}All done!${NORMAL}\n\nFrom now on, all your saves and states will be synchronized each time you start or stop a ROM.\n\nAll system will put their saves and states in\n	Local: \"${YELLOW}~/RetroPie/saves/<SYSTEM>${NORMAL}\"\n	Remote: \"${YELLOW}retropie:${remotebasedir}/<SYSTEM> (${remoteType})${NORMAL}\"\nIf you already have some saves in the ROM directories, you need to move them there manually now! Afterward, you should ${red}reboot${NORMAL} your RetroPie. Then, you should start a full sync via\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 1 Full sync${NORMAL}\n\nCall\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 9 uninstall${NORMAL}\n to remove all or parts of this script.\n\n${RED}Reboot RetroPie now?${NORMAL}" 25 90
+	
+	case $? in
+		0) sudo shutdown -r now  ;;
+	esac
+}
+
+
+##################
+# STEP FUNCTIONS #
+##################
+
+
+# Initialize array $STEPS()
+# OUTPUT
+#	$steps()
+function initSteps ()
+{
+	steps[1]="1. RCLONE"
+	steps[2]="	1a. Testing for RCLONE binary			[ waiting...  ]"
+	steps[3]="	1b. Getting RCLONE binary			[ waiting...  ]"
+	steps[4]="	1c. Testing RCLONE remote			[ waiting...  ]"
+	steps[5]="	1d. Create RCLONE remote			[ waiting...  ]"
+	steps[6]="2. PNGVIEW"
+	steps[7]="	2a. Testing for PNGVIEW binary			[ waiting...  ]"
+	steps[8]="	2b. Getting PNGVIEW source			[ waiting...  ]"
+	steps[9]="	2c. Compiling PNGVIEW				[ waiting...  ]"
+	steps[10]="3. IMAGEMAGICK"
+	steps[11]="	3a. Testing for IMAGEMAGICK			[ waiting...  ]"
+	steps[12]="	3b. Getting IMAGEMAGICK				[ waiting...  ]"
+	steps[13]="4. RCLONE_SCRIPT"
+	steps[14]="	4a. Getting RCLONE_SCRIPT			[ waiting...  ]"
+	steps[15]="	4b. Creating RCLONE_SCRIPT menu item		[ waiting...  ]"
+	steps[16]="	4c. Configure RCLONE_SCRIPT			[ waiting...  ]"
+	steps[17]="5. RUNCOMMAND"
+	steps[18]="	5a. RUNCOMMAND-ONSTART				[ waiting...  ]"
+	steps[19]="	5b. RUNCOMMAND-ONEND				[ waiting...  ]"
+	steps[20]="6. Local SAVEFILE directory"
+	steps[21]="	6a. Check local base directory			[ waiting...  ]"
+	steps[22]="	6b. Check local <SYSTEM> directories		[ waiting...  ]"
+	steps[23]="7. Remote SAVEFILE directory"
+	steps[24]="	7a. Check remote base directory			[ waiting...  ]"
+	steps[25]="	7b. Check remote <SYSTEM> directories		[ waiting...  ]"
+	steps[26]="8. Configure RETROARCH"
+	steps[27]="	8a. Setting local SAVEFILE directory		[ waiting...  ]"
+	steps[28]="9. Finalizing"
+	steps[29]="	9a. Saving configuration			[ waiting...  ]"
+}
+
 # Update item of $STEPS() and show updated progress dialog
 # INPUT
 #	1 > Number of step to update
@@ -170,8 +198,9 @@ function updateStep ()
 		"done")        newStatus="[ ${GREEN}DONE${NORMAL}        ]"  ;;
 		"found")       newStatus="[ ${GREEN}FOUND${NORMAL}       ]"  ;;
 		"not found")   newStatus="[ ${RED}NOT FOUND${NORMAL}   ]"  ;;
+		"created")     newStatus="[ ${GREEN}CREATED${NORMAL}     ]"  ;;
 		"failed")      newStatus="[ ${RED}FAILED${NORMAL}      ]"  ;;
-		"skipped")     newStatus="[ ${YELLOW}${BOLD}SKIPPED${NORMAL}     ]"  ;;
+		"skipped")     newStatus="[ ${YELLOW}SKIPPED${NORMAL}     ]"  ;;
 		*)             newStatus="[ ${RED}UNDEFINED${NORMAL}   ]"  ;;
 	esac
 	
@@ -192,6 +221,31 @@ function updateStep ()
 	
 	# show progress dialog
 	dialogShowProgress ${percent}
+}
+
+
+#######################
+# INSTALLER FUNCTIONS #
+#######################
+
+
+# Installer
+function installer ()
+{
+	initSteps
+	dialogShowProgress 0
+	
+	1RCLONE
+	2PNGVIEW
+	3IMAGEMAGICK
+	4RCLONE_SCRIPT
+	5RUNCOMMAND
+	6LocalSAVEFILEDirectory
+	7RemoteSAVEFILEDirectory
+	8ConfigureRETROARCH
+	9Finalize
+	
+	dialogShowSummary
 }
 
 function 1RCLONE () 
@@ -570,6 +624,11 @@ function 4RCLONE_SCRIPT ()
 	fi
 
 # 4c. Configure RCLONE_SCRIPT
+	updateStep "4c" "in progress" 55
+	
+	4cConfigureRCLONE_SCRIPT
+	
+	updateStep "4c" "done" 60
 }
 
 # Gets RCLONE_SCRIPT
@@ -639,10 +698,418 @@ function 4bCreateRCLONE_SCRIPTMenuItem ()
 	fi
 }
 
+# Gets user input to configure RCLONE_SCRIPT
+function 4cConfigureRCLONE_SCRIPT ()
+{
+	printf "$(date +%FT%T%:z):\t4cConfigureRCLONE_SCRIPT\tSTART\n" >> ./rclone_script-install.log
+	
+	remotebasedir=$(dialog \
+		--stdout \
+		--colors \
+		--ascii-lines \
+		--no-collapse \
+		--cr-wrap \
+		--backtitle "${backtitle}" \
+		--title "Remote base directory" \
+		--inputbox "\nPlease name the directory which will be used as your ${YELLOW}remote base directory${NORMAL}. If necessary, this directory will be created.\n\nExamples:\n* RetroArch\n* mySaves/RetroArch\n\n" 18 40 "RetroArch" 
+		)
+		
+	dialog \
+		--stdout \
+		--colors \
+		--ascii-lines \
+		--no-collapse \
+		--cr-wrap \
+		--backtitle "${backtitle}" \
+		--title "Notifications" \
+		--yesno "\nDo you wish to see ${YELLOW}notifications${NORMAL} whenever RCLONE_SCRIPT is synchronizing?" 18 40
+		
+	case $? in
+		0) shownotifications="TRUE"  ;;
+		1) shownotifications="FALSE"  ;;
+		*) shownotifications="FALSE"  ;;
+	esac
+	
+	printf "$(date +%FT%T%:z):\t4cConfigureRCLONE_SCRIPT\tDONE\n" >> ./rclone_script-install.log
+}
+
+function 5RUNCOMMAND ()
+{
+# 5a. RUNCOMMAND-ONSTART
+	updateStep "5a" "in progress" 60
+	
+	5aRUNCOMMAND-ONSTART
+	case $? in
+		0) updateStep "5a" "found" 65  ;;
+		1) updateStep "5a" "created" 65  ;;
+	esac
+	
+# 5b. RUNCOMMAND-ONEND
+	updateStep "5b" "in progress" 65
+	
+	5aRUNCOMMAND-ONEND
+	case $? in
+		0) updateStep "5b" "found" 70  ;;
+		1) updateStep "5b" "created" 70  ;;
+	esac
+}
+
+# Checks call of RCLONE_SCRIPT by RUNCOMMAND-ONSTART
+# RETURNS
+#	0 > call found
+#	1 > call created
+function 5aRUNCOMMAND-ONSTART ()
+{
+	printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tSTART\n" >> ./rclone_script-install.log
+	
+	# check if RUNCOMMAND-ONSTART.sh exists
+	if [ -f /opt/retropie/configs/all/runcommand-onstart.sh ]
+	then
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE FOUND\n" >> ./rclone_script-install.log
+		
+		# check if there's a call to RCLONE_SCRIPT
+		if grep -Fq "~/scripts/rclone_script/rclone_script.sh" /opt/retropie/configs/all/runcommand-onstart.sh
+		then
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL FOUND\n" >> ./rclone_script-install.log
+			
+			return 0
+		else
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL NOT FOUND\n" >> ./rclone_script-install.log
+			
+			# add call
+			echo "~/scripts/rclone_script/rclone_script.sh \"down\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onstart.sh	
+
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL CREATED\n" >> ./rclone_script-install.log
+			
+			return 1
+		fi
+	else
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE NOT FOUND\n" >> ./rclone_script-install.log
+	
+		echo "#!/bin/bash" > /opt/retropie/configs/all/runcommand-onstart.sh
+		echo "~/scripts/rclone_script/rclone_script.sh \"down\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onstart.sh
+		
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE CREATED\n" >> ./rclone_script-install.log
+		
+		return 1
+	fi
+}
+
+# Checks call of RCLONE_SCRIPT by RUNCOMMAND-ONEND
+# RETURNS
+#	0 > call found
+#	1 > call created
+function 5aRUNCOMMAND-ONEND ()
+{
+	printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tSTART\n" >> ./rclone_script-install.log
+	
+	# check if RUNCOMMAND-ONEND.sh exists
+	if [ -f /opt/retropie/configs/all/runcommand-onend.sh ]
+	then
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE FOUND\n" >> ./rclone_script-install.log
+		
+		# check if there's a call to RCLONE_SCRIPT
+		if grep -Fq "~/scripts/rclone_script/rclone_script.sh" /opt/retropie/configs/all/runcommand-onend.sh
+		then
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL FOUND\n" >> ./rclone_script-install.log
+			
+			return 0
+		else
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL NOT FOUND\n" >> ./rclone_script-install.log
+			
+			# add call
+			echo "~/scripts/rclone_script/rclone_script.sh \"up\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onend.sh	
+
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL CREATED\n" >> ./rclone_script-install.log
+			
+			return 1
+		fi
+	else
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE NOT FOUND\n" >> ./rclone_script-install.log
+	
+		echo "#!/bin/bash" > /opt/retropie/configs/all/runcommand-onend.sh
+		echo "~/scripts/rclone_script/rclone_script.sh \"up\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onend.sh
+		
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE CREATED\n" >> ./rclone_script-install.log
+		
+		return 1
+	fi
+}
+
+function 6LocalSAVEFILEDirectory ()
+{
+# 6a. Test for local SAVEFILE directory
+	updateStep "6a" "in progress" 70
+	
+	6aCheckLocalBaseDirectory
+	case $? in
+		0) updateStep "6a" "found" 75  ;;
+		1) updateStep "6a" "created" 75  ;;
+	esac
+
+# 6b. Check local <SYSTEM> directories
+	updateStep "6b" "in progress" 75
+	
+	6bCheckLocalSystemDirectories
+	case $? in
+		0) updateStep "6b" "found" 80  ;;
+		1) updateStep "6b" "created" 80  ;;
+	esac
+}
+
+# Checks if the local base SAVEFILE directory exists
+# RETURN
+#	0 > directory exists
+#	1 > directory has been created
+function 6aCheckLocalBaseDirectory ()
+{
+	printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tSTART\n" >> ./rclone_script-install.log
+	
+	# check if local base dir exists
+	if [ -d ~/RetroPie/saves ]
+	then
+		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tFOUND\n" >> ./rclone_script-install.log
+		
+		return 0
+	else
+		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tNOT FOUND\n" >> ./rclone_script-install.log
+		
+		mkdir ~/RetroPie/saves
+		
+		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tCREATED\n" >> ./rclone_script-install.log
+		
+		return 1
+	fi
+}
+
+# Checks if the local system specific directories exists
+# RETURN
+#	0 > all found
+#	1 > created at least one
+function 6bCheckLocalSystemDirectories ()
+{
+	printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tSTART\n" >> ./rclone_script-install.log
+	local retval=0
+	
+	# for each directory in ROMS directory...
+	for directory in ~/RetroPie/roms/*
+	do
+		system="${directory##*/}"
+		
+		if [ -d ~/RetroPie/saves/${system} ]
+		then
+			printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tFOUND ${system}\n" >> ./rclone_script-install.log
+		else
+			mkdir ~/RetroPie/saves/${system}
+			printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tCREATED ${system}\n" >> ./rclone_script-install.log
+			retval=1
+		fi
+	done
+	
+	return ${retval}
+}
+
+function 7RemoteSAVEFILEDirectory ()
+{
+# 7a. Check remote base directory
+	updateStep "7a" "in progress" 80
+	
+	7aCheckRemoteBaseDirectory
+	case $? in
+		0) updateStep "7a" "found" 85  ;;
+		1) updateStep "7a" "created" 85  ;;
+		255) updateStep "7a" "failed" 80  ;;
+	esac
+
+# 7b. Check remote <system> directories
+	updateStep "7b" "in progress" 85
+	
+	7bCheckRemoteSystemDirectories
+	case $? in
+		0) updateStep "7b" "found" 90  ;;
+		1) updateStep "7b" "created" 90  ;;
+		255) updateStep "7b" "failed" 85  ;;
+	esac
+}
+
+# Checks if the remote base SAVEFILE directory exists
+# RETURN
+#	0 > directory exists
+#	1 > directory has been created
+#	255 > error while creating directory
+function 7aCheckRemoteBaseDirectory ()
+{
+	printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tSTART\n" >> ./rclone_script-install.log
+	
+	# list all directories from remote
+	remoteDirs=$(rclone lsf --dirs-only -R retropie:)
+	
+	# for each line...
+	while read path
+	do
+		if [ "${path}" == "${remotebasedir}/" ]
+		then
+			printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tFOUND\n" >> ./rclone_script-install.log
+			
+			return 0
+		fi
+	done <<< "${remoteDirs}"
+	
+	# if there has been no match...
+	printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tNOT FOUND\n" >> ./rclone_script-install.log
+	
+	rclone mkdir retropie:"${remotebasedir}" >> ./rclone_script-install.log
+	
+	case $? in
+		0) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tCREATED\n" >> ./rclone_script-install.log; return 1  ;;
+		*) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tERROR\n" >> ./rclone_script-install.log;return 255  ;;
+	esac
+}
+
+# Checks if the remote system specific directories exist
+# RETURN
+#	0 > all found
+#	1 > created at least one
+#	255 > error while creating directory
+function 7bCheckRemoteSystemDirectories ()
+{
+	printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tSTART\n" >> ./rclone_script-install.log
+	
+	local retval=0
+	local output
+	
+	# list all directories in $REMOTEBASEDIR from remote
+	remoteDirs=$(rclone lsf --dirs-only -R retropie:"${remotebasedir}")
+	
+	# for each directory in ROMS directory...
+	for directory in ~/RetroPie/roms/*
+	do
+		system="${directory##*/}"
+		
+		# use grep to search $SYSTEM in $DIRECTORIES
+		output=$(grep "${system}/" -nx <<< "${remoteDirs}")
+		
+		if [ "${output}" = "" ]
+		then
+			# create system dir
+			rclone mkdir retropie:"${remotebasedir}/${system}"
+			
+			if [[ $? -eq 0 ]]
+			then
+				printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tCREATED ${system}\n" >> ./rclone_script-install.log
+				retval=1
+			else
+				printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tERROR\n" >> ./rclone_script-install.log
+				return 255
+			fi
+		else
+			printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tFOUND ${system}\n" >> ./rclone_script-install.log
+		fi
+	done
+	
+	return ${retval}
+}
+
+function 8ConfigureRETROARCH ()
+{
+# 8a. Setting local SAVEFILE directory
+	updateStep "8a" "in progress" 90
+	
+	8aSetLocalSAVEFILEDirectory
+	
+	updateStep "8a" "done" 95
+}
+
+# Sets parameters in all system specific configuration files
+function 8aSetLocalSAVEFILEDirectory ()
+{
+	printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tSTART\n" >> ./rclone_script-install.log
+	
+	local retval
+	
+	# for each directory...
+	for directory in /opt/retropie/configs/*
+	do
+		system="${directory##*/}"
+		
+		# skip directory ALL
+		if [ "${system}" = "all" ]
+		then
+			continue
+		fi
+		
+		# test if there's a RETROARCH.CFG
+		if [ -f "${directory}/retroarch.cfg" ]
+		then
+			printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tFOUND retroarch.cfg FOR ${system}\n" >> ./rclone_script-install.log
+			
+			# test file for SAVEFILE_DIRECTORY
+			retval=$(grep -i "^savefile_directory = " ${directory}/retroarch.cfg)
+		
+			if [ ! "${retval}" = "" ]
+			then
+				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tREPLACED savefile_directory\n" >> ./rclone_script-install.log
+			
+				# replace existing parameter
+				sed -i "/^savefile_directory = /c\savefile_directory = \"~/RetroPie/saves/${system}\"" ${directory}/retroarch.cfg
+			else
+				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tADDED savefile_directory\n" >> ./rclone_script-install.log
+				
+				# create new parameter above "#include..."
+				sed -i "/^#include \"\/opt\/retropie\/configs\/all\/retroarch.cfg\"/c\savefile_directory = \"~\/RetroPie\/saves\/${system}\"\n#include \"\/opt\/retropie\/configs\/all\/retroarch.cfg\"" ${directory}/retroarch.cfg
+			fi
+			
+			# test file for SAVESTATE_DIRECTORY
+			retval=$(grep -i "^savestate_directory = " ${directory}/retroarch.cfg)
+		
+			if [ ! "${retval}" = "" ]
+			then
+				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tREPLACED savestate_directory\n" >> ./rclone_script-install.log
+				
+				# replace existing parameter
+				sed -i "/^savestate_directory = /c\savestate_directory = \"~/RetroPie/saves/${system}\"" ${directory}/retroarch.cfg
+			else
+				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tADDED savestate_directory\n" >> ./rclone_script-install.log
+			
+				# create new parameter above "#include..."
+				sed -i "/^#include \"\/opt\/retropie\/configs\/all\/retroarch.cfg\"/c\savestate_directory = \"~\/RetroPie\/saves\/${system}\"\n#include \"\/opt\/retropie\/configs\/all\/retroarch.cfg\"" ${directory}/retroarch.cfg
+			fi
+			
+		fi
+	done
+	
+	printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tDONE\n" >> ./rclone_script-install.log
+}
+
+function 9Finalize ()
+{
+# 9a. Saving configuration
+	updateStep "9a" "in progress" 95
+	
+	9aSaveConfiguration
+	
+	updateStep "9a" "done" 100
+}
+
+# Saves the configuration of RCLONE_SCRIPT
+function 9aSaveConfiguration ()
+{
+	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tSTART\n" >> ./rclone_script-install.log
+	
+	echo "remotebasedir=${remotebasedir}" > ~/scripts/rclone_script/rclone_script.ini
+	echo "shownotifications=${shownotifications}" > ~/scripts/rclone_script/rclone_script.ini
+	echo "logfile=~/scripts/rclone_script.log" >> ~/scripts/rclone_script/rclone_script.ini
+	echo "debug=0" >> ~/scripts/rclone_script/rclone_script.ini
+	
+	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tDONE\n" >> ./rclone_script-install.log
+}
 
 
+########
+# MAIN #
+########
 
-# main
+
 if [ "${branch}" == "beta" ]
 then
 	dialogBetaWarning
