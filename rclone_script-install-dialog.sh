@@ -648,9 +648,9 @@ function 4aGetRCLONE_SCRIPT ()
 	
 	{ #try
 		# get script files
-		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script.sh --append-output=~/scripts/rclone_script/rclone_script-install.log &&
-		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-menu.sh --append-output=~/scripts/rclone_script/rclone_script-install.log &&
-		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-uninstall.sh --append-output=~/scripts/rclone_script/rclone_script-install.log &&
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script.sh --append-output=/home/pi/scripts/rclone_script/rclone_script-install.log &&
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-menu.sh --append-output=/home/pi/scripts/rclone_script/rclone_script-install.log &&
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-uninstall.sh --append-output=/home/pi/scripts/rclone_script/rclone_script-install.log &&
 		
 		# change mod
 		chmod +x ~/scripts/rclone_script/rclone_script.sh >> ~/scripts/rclone_script/rclone_script-install.log &&
