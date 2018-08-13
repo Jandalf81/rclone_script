@@ -923,7 +923,8 @@ function 6bCheckLocalSystemDirectories ()
 			then
 				printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tFOUND symlink ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			else
-				ln -s ~/RetroPie/saves/$(readlink ~/RetroPie/roms/${system}) ~/RetroPie/saves/${system}
+				ln -s $(readlink ~/RetroPie/roms/${system}) ~/RetroPie/saves/${system}
+				
 				printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tCREATED symlink ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 				retval=1
 			fi
@@ -1021,6 +1022,17 @@ function 7bCheckRemoteSystemDirectories ()
 			if [[ $? -eq 0 ]]
 			then
 				printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tCREATED ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
+				
+				# put note if local directory is a symlink
+				if [ -L ~/RetroPie/saves/${system} ]
+				then
+					printf "ATTENTION\r\n\r\nThis directory will not be used! This is just a symlink.\r\nPlace your savefiles in\r\n\r\n$(readlink ~/RetroPie/roms/${system})\r\n\r\ninstead." > ~/scripts/rclone_script/readme.txt
+					
+					rclone copy ~/scripts/rclone_script/readme.txt retropie:"${remotebasedir}/${system}/"
+					
+					rm ~/scripts/rclone_script/readme.txt
+				fi
+				
 				retval=1
 			else
 				printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log
