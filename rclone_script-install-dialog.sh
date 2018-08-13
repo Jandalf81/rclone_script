@@ -336,11 +336,11 @@ function 1bInstallRCLONE ()
 		rm ~/rclone-current-linux-arm.zip >> ~/scripts/rclone_script/rclone_script-install.log &&
 		rm -r ~/rclone-v* >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
-		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		return 0
 	} || { #catch
-		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		# remove temp files
 		rm ~/rclone-current-linux-arm.zip >> ~/scripts/rclone_script/rclone_script-install.log &&
@@ -584,15 +584,15 @@ function 3bInstallIMAGEMAGICK ()
 {
 	printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
-	sudo apt-get update >> ~/scripts/rclone_script/rclone_script-install.log &&
-	sudo apt-get --yes install imagemagick >> ~/scripts/rclone_script/rclone_script-install.log &&
+	sudo apt-get update >> ~/scripts/rclone_script/rclone_script-install.log
+	sudo apt-get --yes install imagemagick >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	if [[ $? -eq 0 ]]
 	then
-		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 0
 	else
-		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 1
 	fi
 }
@@ -660,7 +660,7 @@ function 4aGetRCLONE_SCRIPT ()
 		
 		return 0
 	} || { # catch
-		printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		return 1
 	}
@@ -970,7 +970,7 @@ function 7aCheckRemoteBaseDirectory ()
 	
 	case $? in
 		0) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tCREATED\n" >> ~/scripts/rclone_script/rclone_script-install.log; return 1  ;;
-		*) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log;return 255  ;;
+		*) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log; return 255  ;;
 	esac
 }
 
