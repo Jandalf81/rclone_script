@@ -270,6 +270,7 @@ function 1RCLONE ()
 			updateStep "1b" "done" 10
 		else
 			updateStep "1b" "failed" 5
+			exit
 		fi
 	fi
 	
@@ -320,7 +321,7 @@ function 1bInstallRCLONE ()
 	# TODO get RCLONE for 64bit
 	{ # try
 		# get binary
-		wget -P ~ https://downloads.rclone.org/rclone-current-linux-arm.zip --append-output=~/scripts/rclone_script/rclone_script-install.log &&
+		wget -P ~ https://downloads.rclone.org/rclone-current-linux-arm.zip --append-output=/home/pi/scripts/rclone_script/rclone_script-install.log &&
 		unzip ~/rclone-current-linux-arm.zip -d ~ >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		cd ~/rclone-v* &&
@@ -480,7 +481,7 @@ function 2bGetPNGVIEWsource ()
 	printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	{ #try
-		wget -P ~ https://github.com/AndrewFromMelbourne/raspidmx/archive/master.zip --append-output=~/scripts/rclone_script/rclone_script-install.log &&
+		wget -P ~ https://github.com/AndrewFromMelbourne/raspidmx/archive/master.zip --append-output=/home/pi/scripts/rclone_script/rclone_script-install.log &&
 		unzip ~/master.zip -d ~ >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
