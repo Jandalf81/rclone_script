@@ -297,14 +297,14 @@ function 1RCLONE ()
 # 	1 > RCLONE is not installed
 function 1aTestRCLONE ()
 {
-	printf "$(date +%FT%T%:z):\t1aTestRCLONE\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t1aTestRCLONE\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	if [ -f /usr/bin/rclone ]
 	then
-		printf "$(date +%FT%T%:z):\t1aTestRCLONE\tFOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1aTestRCLONE\tFOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 0
 	else
-		printf "$(date +%FT%T%:z):\t1aTestRCLONE\tNOT FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1aTestRCLONE\tNOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 1
 	fi
 }
@@ -315,36 +315,36 @@ function 1aTestRCLONE ()
 #	1 > Error while installing RCLONE
 function 1bInstallRCLONE ()
 {
-	printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	# TODO get RCLONE for 64bit
 	{ # try
 		# get binary
-		wget -P ~ https://downloads.rclone.org/rclone-current-linux-arm.zip --append-output=./rclone_script-install.log &&
-		unzip ~/rclone-current-linux-arm.zip -d ~ >> ./rclone_script-install.log &&
+		wget -P ~ https://downloads.rclone.org/rclone-current-linux-arm.zip --append-output=~/scripts/rclone_script/rclone_script-install.log &&
+		unzip ~/rclone-current-linux-arm.zip -d ~ >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		cd ~/rclone-v* &&
 
 		# move binary
-		sudo mv rclone /usr/bin >> ./rclone_script-install.log &&
-		sudo chown root:root /usr/bin/rclone >> ./rclone_script-install.log &&
-		sudo chmod 755 /usr/bin/rclone >> ./rclone_script-install.log &&
+		sudo mv rclone /usr/bin >> ~/scripts/rclone_script/rclone_script-install.log &&
+		sudo chown root:root /usr/bin/rclone >> ~/scripts/rclone_script/rclone_script-install.log &&
+		sudo chmod 755 /usr/bin/rclone >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		cd ~ &&
 		
 		# remove temp files
-		rm ~/rclone-current-linux-arm.zip >> ./rclone_script-install.log &&
-		rm -r ~/rclone-v* >> ./rclone_script-install.log &&
+		rm ~/rclone-current-linux-arm.zip >> ~/scripts/rclone_script/rclone_script-install.log &&
+		rm -r ~/rclone-v* >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
-		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tDONE\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		return 0
 	} || { #catch
-		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tERROR\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1bInstallRCLONE\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		# remove temp files
-		rm ~/rclone-current-linux-arm.zip >> ./rclone_script-install.log &&
-		rm -r ~/rclone-v* >> ./rclone_script-install.log &&
+		rm ~/rclone-current-linux-arm.zip >> ~/scripts/rclone_script/rclone_script-install.log &&
+		rm -r ~/rclone-v* >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		return 1
 	}
@@ -356,7 +356,7 @@ function 1bInstallRCLONE ()
 #	1 > no remote RETROPIE found
 function 1cTestRCLONEremote ()
 {
-	printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	local remotes=$(rclone listremotes)
 	
@@ -364,10 +364,10 @@ function 1cTestRCLONEremote ()
 	
 	if [ "${retval}" == "retropie:" ]
 	then
-		printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tFOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tFOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 0
 	else
-		printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tNOT FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1cTestRCLONEremote\tNOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 1
 	fi
 }
@@ -377,7 +377,7 @@ function 1cTestRCLONEremote ()
 #	0 > remote RETROPIE has been created (no other OUTPUT possible)
 function 1dCreateRCLONEremote ()
 {
-	printf "$(date +%FT%T%:z):\t1dCreateRCLONEremote\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t1dCreateRCLONEremote\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	dialog \
 		--stdout \
@@ -408,7 +408,7 @@ function 1dCreateRCLONEremote ()
 			
 		1dCreateRCLONEremote
 	else
-		printf "$(date +%FT%T%:z):\t1dCreateRCLONEremote\tFOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t1dCreateRCLONEremote\tFOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 0
 	fi	
 }
@@ -459,14 +459,14 @@ function 2PNGVIEW ()
 #	1 > PNGVIEW is not installed
 function 2aTestPNGVIEW ()
 {
-	printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	if [ -f /usr/bin/pngview ]
 	then
-		printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tFOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tFOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 0
 	else
-		printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tNOT FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t2aTestPNGVIEW\tNOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 1
 	fi
 }
@@ -477,20 +477,20 @@ function 2aTestPNGVIEW ()
 #	1 > no source downloaded, removed temp files
 function 2bGetPNGVIEWsource ()
 {
-	printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	{ #try
-		wget -P ~ https://github.com/AndrewFromMelbourne/raspidmx/archive/master.zip --append-output=./rclone_script-install.log &&
-		unzip ~/master.zip -d ~ >> ./rclone_script-install.log &&
+		wget -P ~ https://github.com/AndrewFromMelbourne/raspidmx/archive/master.zip --append-output=~/scripts/rclone_script/rclone_script-install.log &&
+		unzip ~/master.zip -d ~ >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
-		printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tDONE\n" >> ./rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 	
 		return 0
 	} || { #catch
-		printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tERROR\n" >> ./rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t2bGetPNGVIEWsource\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
-		rm ~/master.zip >> ./rclone_script-install.log &&
-		sudo rm -r ~/raspidmx-master >> ./rclone_script-install.log &&
+		rm ~/master.zip >> ~/scripts/rclone_script/rclone_script-install.log &&
+		sudo rm -r ~/raspidmx-master >> ~/scripts/rclone_script/rclone_script-install.log &&
 	
 		return 1
 	}
@@ -502,32 +502,32 @@ function 2bGetPNGVIEWsource ()
 #	1 > errors while compiling, removed temp files
 function 2cCompilePNGVIEW ()
 {
-	printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	{ #try
 		# compile
 		# cd ~/raspidmx-master &&
-		make --directory=~/raspidmx-master >> ./rclone_script-install.log &&
+		make --directory=~/raspidmx-master >> ~/scripts/rclone_script/rclone_script-install.log &&
 	
 		# move binary files
-		sudo mv ~/raspidmx-master/pngview/pngview /usr/bin >> ./rclone_script-install.log &&
-		sudo mv ~/raspidmx-master/lib/libraspidmx.so.1 /usr/lib >> ./rclone_script-install.log &&
-		sudo chown root:root /usr/bin/pngview >> ./rclone_script-install.log &&
-		sudo chmod 755 /usr/bin/pngview >> ./rclone_script-install.log &&
+		sudo mv ~/raspidmx-master/pngview/pngview /usr/bin >> ~/scripts/rclone_script/rclone_script-install.log &&
+		sudo mv ~/raspidmx-master/lib/libraspidmx.so.1 /usr/lib >> ~/scripts/rclone_script/rclone_script-install.log &&
+		sudo chown root:root /usr/bin/pngview >> ~/scripts/rclone_script/rclone_script-install.log &&
+		sudo chmod 755 /usr/bin/pngview >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		# remove temp files
-		rm ~/master.zip >> ./rclone_script-install.log &&
-		sudo rm -r ~/raspidmx-master >> ./rclone_script-install.log &&
+		rm ~/master.zip >> ~/scripts/rclone_script/rclone_script-install.log &&
+		sudo rm -r ~/raspidmx-master >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
-		printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tDONE\n" >> ./rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 	
 		return 0
 	} || { #catch
-		printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tERROR\n" >> ./rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t2cCompilePNGVIEW\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 	
 		# remove temp files
-		rm ~/master.zip >> ./rclone_script-install.log &&
-		sudo rm -r ~/raspidmx-master >> ./rclone_script-install.log &&
+		rm ~/master.zip >> ~/scripts/rclone_script/rclone_script-install.log &&
+		sudo rm -r ~/raspidmx-master >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		return 1
 	}
@@ -564,14 +564,14 @@ function 3IMAGEMAGICK ()
 #	1 > IMAGEMAGICK is not installed
 function 3aTestIMAGEMAGICK ()
 {
-	printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	if [ -f /usr/bin/convert ]
 	then
-		printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tFOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tFOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 0
 	else
-		printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tNOT FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t3aTestIMAGEMAGICK\tNOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 1
 	fi
 }
@@ -582,17 +582,17 @@ function 3aTestIMAGEMAGICK ()
 #	1 > Error while installing IMAGEMAGICK
 function 3bInstallIMAGEMAGICK ()
 {
-	printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
-	sudo apt-get update >> ./rclone_script-install.log &&
-	sudo apt-get --yes install imagemagick >> ./rclone_script-install.log &&
+	sudo apt-get update >> ~/scripts/rclone_script/rclone_script-install.log &&
+	sudo apt-get --yes install imagemagick >> ~/scripts/rclone_script/rclone_script-install.log &&
 	
 	if [[ $? -eq 0 ]]
 	then
-		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tDONE\n" >> ./rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 		return 0
 	else
-		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tERROR\n" >> ./rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t3bInstallIMAGEMAGICK\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 		return 1
 	fi
 }
@@ -637,30 +637,30 @@ function 4RCLONE_SCRIPT ()
 #	1 > errors while downloading
 function 4aGetRCLONE_SCRIPT ()
 {
-	printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	# create directory if necessary
 	if [ ! -d ~/scripts/rclone_script ]
 	then
-		mkdir ~/scripts/rclone_script >> ./rclone_script-install.log
+		mkdir ~/scripts/rclone_script >> ~/scripts/rclone_script/rclone_script-install.log
 	fi
 	
 	{ #try
 		# get script files
-		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script.sh --append-output=./rclone_script-install.log &&
-		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-menu.sh --append-output=./rclone_script-install.log &&
-		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-uninstall.sh --append-output=./rclone_script-install.log &&
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script.sh --append-output=~/scripts/rclone_script/rclone_script-install.log &&
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-menu.sh --append-output=~/scripts/rclone_script/rclone_script-install.log &&
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-uninstall.sh --append-output=~/scripts/rclone_script/rclone_script-install.log &&
 		
 		# change mod
-		chmod +x ~/scripts/rclone_script/rclone_script.sh >> ./rclone_script-install.log &&
-		chmod +x ~/scripts/rclone_script/rclone_script-menu.sh >> ./rclone_script-install.log &&
-		chmod +x ~/scripts/rclone_script/rclone_script-uninstall.sh >> ./rclone_script-install.log &&
+		chmod +x ~/scripts/rclone_script/rclone_script.sh >> ~/scripts/rclone_script/rclone_script-install.log &&
+		chmod +x ~/scripts/rclone_script/rclone_script-menu.sh >> ~/scripts/rclone_script/rclone_script-install.log &&
+		chmod +x ~/scripts/rclone_script/rclone_script-uninstall.sh >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
-		printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tDONE\n" >> ./rclone_script-install.log &&
+		printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log &&
 		
 		return 0
 	} || { # catch
-		printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tERROR\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t4aGetRCLONE_SCRIPT\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		return 1
 	}
@@ -672,15 +672,15 @@ function 4aGetRCLONE_SCRIPT ()
 #	1 > error while creating menu item
 function 4bCreateRCLONE_SCRIPTMenuItem ()
 {
-	printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	# move menu script
-	mv --force ~/scripts/rclone_script/rclone_script-menu.sh ~/RetroPie/retropiemenu >> ./rclone_script-install.log
+	mv --force ~/scripts/rclone_script/rclone_script-menu.sh ~/RetroPie/retropiemenu >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	# check if menu item exists
 	if [[ $(xmlstarlet sel -t -v "count(/gameList/game[path='./rclone_script-menu.sh'])" ~/.emulationstation/gamelists/retropie/gamelist.xml) -eq 0 ]]
 	then
-		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tNOT FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tNOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		# sed -i "/<\/gameList>/c\\\\t<game>\n\t\t<path>.\/rclone_script-menu.sh<\/path>\n\t\t<name>RCLONE_SCRIPT menu<\/name>\n\t\t<desc>Customize RCLONE_SCRIPT, start a full sync, uninstall RCLONE_SCRIPT<\/desc>\n\t\t<image></image>\n\t<\/game>\n<\/gameList>" ~/.emulationstation/gamelists/retropie/gamelist.xml
 		
@@ -694,14 +694,14 @@ function 4bCreateRCLONE_SCRIPTMenuItem ()
 		
 		if [[ $? -eq 0 ]]
 		then
-			printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tCREATED\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tCREATED\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			return 0
 		else
-			printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tERROR\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			return 1
 		fi
 	else
-		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tFOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tFOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		return 0
 	fi
 }
@@ -709,7 +709,7 @@ function 4bCreateRCLONE_SCRIPTMenuItem ()
 # Gets user input to configure RCLONE_SCRIPT
 function 4cConfigureRCLONE_SCRIPT ()
 {
-	printf "$(date +%FT%T%:z):\t4cConfigureRCLONE_SCRIPT\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t4cConfigureRCLONE_SCRIPT\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	remotebasedir=$(dialog \
 		--stdout \
@@ -738,7 +738,7 @@ function 4cConfigureRCLONE_SCRIPT ()
 		*) shownotifications="FALSE"  ;;
 	esac
 	
-	printf "$(date +%FT%T%:z):\t4cConfigureRCLONE_SCRIPT\tDONE\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t4cConfigureRCLONE_SCRIPT\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log
 }
 
 function 5RUNCOMMAND ()
@@ -768,36 +768,36 @@ function 5RUNCOMMAND ()
 #	1 > call created
 function 5aRUNCOMMAND-ONSTART ()
 {
-	printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	# check if RUNCOMMAND-ONSTART.sh exists
 	if [ -f /opt/retropie/configs/all/runcommand-onstart.sh ]
 	then
-		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		# check if there's a call to RCLONE_SCRIPT
 		if grep -Fq "~/scripts/rclone_script/rclone_script.sh" /opt/retropie/configs/all/runcommand-onstart.sh
 		then
-			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL FOUND\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 			return 0
 		else
-			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL NOT FOUND\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL NOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 			# add call
 			echo "~/scripts/rclone_script/rclone_script.sh \"down\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onstart.sh	
 
-			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL CREATED\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL CREATED\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 			return 1
 		fi
 	else
-		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE NOT FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE NOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 		echo "#!/bin/bash" > /opt/retropie/configs/all/runcommand-onstart.sh
 		echo "~/scripts/rclone_script/rclone_script.sh \"down\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onstart.sh
 		
-		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE CREATED\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE CREATED\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		return 1
 	fi
@@ -809,36 +809,36 @@ function 5aRUNCOMMAND-ONSTART ()
 #	1 > call created
 function 5aRUNCOMMAND-ONEND ()
 {
-	printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	# check if RUNCOMMAND-ONEND.sh exists
 	if [ -f /opt/retropie/configs/all/runcommand-onend.sh ]
 	then
-		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		# check if there's a call to RCLONE_SCRIPT
 		if grep -Fq "~/scripts/rclone_script/rclone_script.sh" /opt/retropie/configs/all/runcommand-onend.sh
 		then
-			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL FOUND\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 			return 0
 		else
-			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL NOT FOUND\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL NOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 			# add call
 			echo "~/scripts/rclone_script/rclone_script.sh \"up\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onend.sh	
 
-			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL CREATED\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL CREATED\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 			return 1
 		fi
 	else
-		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE NOT FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE NOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 		echo "#!/bin/bash" > /opt/retropie/configs/all/runcommand-onend.sh
 		echo "~/scripts/rclone_script/rclone_script.sh \"up\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onend.sh
 		
-		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE CREATED\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE CREATED\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		return 1
 	fi
@@ -871,20 +871,20 @@ function 6LocalSAVEFILEDirectory ()
 #	1 > directory has been created
 function 6aCheckLocalBaseDirectory ()
 {
-	printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	# check if local base dir exists
 	if [ -d ~/RetroPie/saves ]
 	then
-		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tFOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tFOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		return 0
 	else
-		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tNOT FOUND\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tNOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		mkdir ~/RetroPie/saves
 		
-		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tCREATED\n" >> ./rclone_script-install.log
+		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tCREATED\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		
 		return 1
 	fi
@@ -896,7 +896,7 @@ function 6aCheckLocalBaseDirectory ()
 #	1 > created at least one
 function 6bCheckLocalSystemDirectories ()
 {
-	printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	local retval=0
 	
 	# for each directory in ROMS directory...
@@ -906,10 +906,10 @@ function 6bCheckLocalSystemDirectories ()
 		
 		if [ -d ~/RetroPie/saves/${system} ]
 		then
-			printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tFOUND ${system}\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tFOUND ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		else
 			mkdir ~/RetroPie/saves/${system}
-			printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tCREATED ${system}\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tCREATED ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			retval=1
 		fi
 	done
@@ -947,7 +947,7 @@ function 7RemoteSAVEFILEDirectory ()
 #	255 > error while creating directory
 function 7aCheckRemoteBaseDirectory ()
 {
-	printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	# list all directories from remote
 	remoteDirs=$(rclone lsf --dirs-only -R retropie:)
@@ -957,20 +957,20 @@ function 7aCheckRemoteBaseDirectory ()
 	do
 		if [ "${path}" == "${remotebasedir}/" ]
 		then
-			printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tFOUND\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tFOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 			return 0
 		fi
 	done <<< "${remoteDirs}"
 	
 	# if there has been no match...
-	printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tNOT FOUND\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tNOT FOUND\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
-	rclone mkdir retropie:"${remotebasedir}" >> ./rclone_script-install.log
+	rclone mkdir retropie:"${remotebasedir}" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	case $? in
-		0) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tCREATED\n" >> ./rclone_script-install.log; return 1  ;;
-		*) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tERROR\n" >> ./rclone_script-install.log;return 255  ;;
+		0) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tCREATED\n" >> ~/scripts/rclone_script/rclone_script-install.log; return 1  ;;
+		*) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log;return 255  ;;
 	esac
 }
 
@@ -981,7 +981,7 @@ function 7aCheckRemoteBaseDirectory ()
 #	255 > error while creating directory
 function 7bCheckRemoteSystemDirectories ()
 {
-	printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	local retval=0
 	local output
@@ -1004,14 +1004,14 @@ function 7bCheckRemoteSystemDirectories ()
 			
 			if [[ $? -eq 0 ]]
 			then
-				printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tCREATED ${system}\n" >> ./rclone_script-install.log
+				printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tCREATED ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 				retval=1
 			else
-				printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tERROR\n" >> ./rclone_script-install.log
+				printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tERROR\n" >> ~/scripts/rclone_script/rclone_script-install.log
 				return 255
 			fi
 		else
-			printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tFOUND ${system}\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t7bCheckRemoteSystemDirectories\tFOUND ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 		fi
 	done
 	
@@ -1031,7 +1031,7 @@ function 8ConfigureRETROARCH ()
 # Sets parameters in all system specific configuration files
 function 8aSetLocalSAVEFILEDirectory ()
 {
-	printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	local retval
 	
@@ -1049,19 +1049,19 @@ function 8aSetLocalSAVEFILEDirectory ()
 		# test if there's a RETROARCH.CFG
 		if [ -f "${directory}/retroarch.cfg" ]
 		then
-			printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tFOUND retroarch.cfg FOR ${system}\n" >> ./rclone_script-install.log
+			printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tFOUND retroarch.cfg FOR ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 			# test file for SAVEFILE_DIRECTORY
 			retval=$(grep -i "^savefile_directory = " ${directory}/retroarch.cfg)
 		
 			if [ ! "${retval}" = "" ]
 			then
-				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tREPLACED savefile_directory\n" >> ./rclone_script-install.log
+				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tREPLACED savefile_directory\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 				# replace existing parameter
 				sed -i "/^savefile_directory = /c\savefile_directory = \"~/RetroPie/saves/${system}\"" ${directory}/retroarch.cfg
 			else
-				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tADDED savefile_directory\n" >> ./rclone_script-install.log
+				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tADDED savefile_directory\n" >> ~/scripts/rclone_script/rclone_script-install.log
 				
 				# create new parameter above "#include..."
 				sed -i "/^#include \"\/opt\/retropie\/configs\/all\/retroarch.cfg\"/c\savefile_directory = \"~\/RetroPie\/saves\/${system}\"\n#include \"\/opt\/retropie\/configs\/all\/retroarch.cfg\"" ${directory}/retroarch.cfg
@@ -1072,12 +1072,12 @@ function 8aSetLocalSAVEFILEDirectory ()
 		
 			if [ ! "${retval}" = "" ]
 			then
-				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tREPLACED savestate_directory\n" >> ./rclone_script-install.log
+				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tREPLACED savestate_directory\n" >> ~/scripts/rclone_script/rclone_script-install.log
 				
 				# replace existing parameter
 				sed -i "/^savestate_directory = /c\savestate_directory = \"~/RetroPie/saves/${system}\"" ${directory}/retroarch.cfg
 			else
-				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tADDED savestate_directory\n" >> ./rclone_script-install.log
+				printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tADDED savestate_directory\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			
 				# create new parameter above "#include..."
 				sed -i "/^#include \"\/opt\/retropie\/configs\/all\/retroarch.cfg\"/c\savestate_directory = \"~\/RetroPie\/saves\/${system}\"\n#include \"\/opt\/retropie\/configs\/all\/retroarch.cfg\"" ${directory}/retroarch.cfg
@@ -1086,7 +1086,7 @@ function 8aSetLocalSAVEFILEDirectory ()
 		fi
 	done
 	
-	printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tDONE\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t8aSetLocalSAVEFILEDirectory\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log
 }
 
 function 9Finalize ()
@@ -1102,14 +1102,14 @@ function 9Finalize ()
 # Saves the configuration of RCLONE_SCRIPT
 function 9aSaveConfiguration ()
 {
-	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tSTART\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tSTART\n" >> ~/scripts/rclone_script/rclone_script-install.log
 	
 	echo "remotebasedir=${remotebasedir}" > ~/scripts/rclone_script/rclone_script.ini
 	echo "shownotifications=${shownotifications}" >> ~/scripts/rclone_script/rclone_script.ini
 	echo "logfile=~/scripts/rclone_script/rclone_script.log" >> ~/scripts/rclone_script/rclone_script.ini
 	echo "debug=0" >> ~/scripts/rclone_script/rclone_script.ini
 	
-	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tDONE\n" >> ./rclone_script-install.log
+	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tDONE\n" >> ~/scripts/rclone_script/rclone_script-install.log
 }
 
 
