@@ -905,13 +905,28 @@ function 6bCheckLocalSystemDirectories ()
 	do
 		system="${directory##*/}"
 		
-		if [ -d ~/RetroPie/saves/${system} ]
+		# check if ROMS directory is a real directory and not a SymLink
+		if [ ! -L ~/RetroPie/roms/${system} ]
 		then
-			printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tFOUND ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
+			# check if same directory exists in SAVES, create if necessary
+			if [ -d ~/RetroPie/saves/${system} ] 
+			then
+				printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tFOUND directory ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
+			else
+				mkdir ~/RetroPie/saves/${system}
+				printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tCREATED directory ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
+				retval=1
+			fi
 		else
-			mkdir ~/RetroPie/saves/${system}
-			printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tCREATED ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
-			retval=1
+			# check if same SymLink exists in SAVES, create if necessary
+			if [ -L ~/RetroPie/saves/${system} ]
+			then
+				printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tFOUND symlink ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
+			else
+				ln -s ~/RetroPie/saves/${system} ~/RetroPie/saves/$(readlink ~/RetroPie/roms/${system})
+				printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tCREATED symlink ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
+				retval=1
+			fi
 		fi
 	done
 	
