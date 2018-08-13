@@ -93,12 +93,12 @@ showNotification ()
 	convert -size 1500x32 xc:"rgba(0,0,0,0)" -type truecolormatte -gravity NorthWest \
 			-pointsize 32 -font FreeMono -style italic \
 			-fill ${color} -draw "text 0,0 '${message}'" \
-			PNG32:- > ~/scripts/rclone_script-notification.png
+			PNG32:- > ~/scripts/rclone_script/rclone_script-notification.png
 	
 	killOtherNotification
 	
 	# show PNG using PNGVIEW
-	nohup pngview -b 0 -l 10000 ~/scripts/rclone_script-notification.png -x ${posx} -y ${posy} -t ${timeout} &>/dev/null &
+	nohup pngview -b 0 -l 10000 ~/scripts/rclone_script/rclone_script-notification.png -x ${posx} -y ${posy} -t ${timeout} &>/dev/null &
 }
 
 getROMFileName ()

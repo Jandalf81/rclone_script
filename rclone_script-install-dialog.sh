@@ -145,24 +145,24 @@ function dialogShowSummary ()
 function initSteps ()
 {
 	steps[1]="1. RCLONE"
-	steps[2]="	1a. Testing for RCLONE binary			[ waiting...  ]"
-	steps[3]="	1b. Getting RCLONE binary			[ waiting...  ]"
-	steps[4]="	1c. Testing RCLONE remote			[ waiting...  ]"
+	steps[2]="	1a. Test for RCLONE binary			[ waiting...  ]"
+	steps[3]="	1b. Get RCLONE binary				[ waiting...  ]"
+	steps[4]="	1c. Test RCLONE remote				[ waiting...  ]"
 	steps[5]="	1d. Create RCLONE remote			[ waiting...  ]"
 	steps[6]="2. PNGVIEW"
-	steps[7]="	2a. Testing for PNGVIEW binary			[ waiting...  ]"
-	steps[8]="	2b. Getting PNGVIEW source			[ waiting...  ]"
-	steps[9]="	2c. Compiling PNGVIEW				[ waiting...  ]"
+	steps[7]="	2a. Test for PNGVIEW binary			[ waiting...  ]"
+	steps[8]="	2b. Get PNGVIEW source				[ waiting...  ]"
+	steps[9]="	2c. Compile PNGVIEW				[ waiting...  ]"
 	steps[10]="3. IMAGEMAGICK"
-	steps[11]="	3a. Testing for IMAGEMAGICK			[ waiting...  ]"
-	steps[12]="	3b. Getting IMAGEMAGICK				[ waiting...  ]"
+	steps[11]="	3a. Test for IMAGEMAGICK			[ waiting...  ]"
+	steps[12]="	3b. Get IMAGEMAGICK				[ waiting...  ]"
 	steps[13]="4. RCLONE_SCRIPT"
-	steps[14]="	4a. Getting RCLONE_SCRIPT			[ waiting...  ]"
-	steps[15]="	4b. Creating RCLONE_SCRIPT menu item		[ waiting...  ]"
+	steps[14]="	4a. Get RCLONE_SCRIPT files			[ waiting...  ]"
+	steps[15]="	4b. Create RCLONE_SCRIPT menu item		[ waiting...  ]"
 	steps[16]="	4c. Configure RCLONE_SCRIPT			[ waiting...  ]"
 	steps[17]="5. RUNCOMMAND"
-	steps[18]="	5a. RUNCOMMAND-ONSTART				[ waiting...  ]"
-	steps[19]="	5b. RUNCOMMAND-ONEND				[ waiting...  ]"
+	steps[18]="	5a. Add call to RUNCOMMAND-ONSTART		[ waiting...  ]"
+	steps[19]="	5b. Add call to RUNCOMMAND-ONEND		[ waiting...  ]"
 	steps[20]="6. Local SAVEFILE directory"
 	steps[21]="	6a. Check local base directory			[ waiting...  ]"
 	steps[22]="	6b. Check local <SYSTEM> directories		[ waiting...  ]"
@@ -170,9 +170,9 @@ function initSteps ()
 	steps[24]="	7a. Check remote base directory			[ waiting...  ]"
 	steps[25]="	7b. Check remote <SYSTEM> directories		[ waiting...  ]"
 	steps[26]="8. Configure RETROARCH"
-	steps[27]="	8a. Setting local SAVEFILE directories		[ waiting...  ]"
+	steps[27]="	8a. Set local SAVEFILE directories		[ waiting...  ]"
 	steps[28]="9. Finalizing"
-	steps[29]="	9a. Saving configuration			[ waiting...  ]"
+	steps[29]="	9a. Save configuration				[ waiting...  ]"
 }
 
 # Update item of $STEPS() and show updated progress dialog
@@ -678,14 +678,22 @@ function 4bCreateRCLONE_SCRIPTMenuItem ()
 	mv --force ~/scripts/rclone_script/rclone_script-menu.sh ~/RetroPie/retropiemenu >> ./rclone_script-install.log
 	
 	# check if menu item exists
-	if grep -Fq "<path>./rclone_script-menu.sh</path>" ~/.emulationstation/gamelists/retropie/gamelist.xml
+	if [[ $(xmlstarlet sel -t -v "count(/gameList/game[path='./rclone_script-menu.sh'])" ~/.emulationstation/gamelists/retropie/gamelist.xml) -eq 0 ]]
 	then
 		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tFOUND\n" >> ./rclone_script-install.log
 		return 0
 	else
 		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tNOT FOUND\n" >> ./rclone_script-install.log
 		
-		sed -i "/<\/gameList>/c\\\\t<game>\n\t\t<path>.\/rclone_script-menu.sh<\/path>\n\t\t<name>RCLONE_SCRIPT menu<\/name>\n\t\t<desc>Customize RCLONE_SCRIPT, start a full sync, uninstall RCLONE_SCRIPT<\/desc>\n\t\t<image></image>\n\t<\/game>\n<\/gameList>" ~/.emulationstation/gamelists/retropie/gamelist.xml
+		# sed -i "/<\/gameList>/c\\\\t<game>\n\t\t<path>.\/rclone_script-menu.sh<\/path>\n\t\t<name>RCLONE_SCRIPT menu<\/name>\n\t\t<desc>Customize RCLONE_SCRIPT, start a full sync, uninstall RCLONE_SCRIPT<\/desc>\n\t\t<image></image>\n\t<\/game>\n<\/gameList>" ~/.emulationstation/gamelists/retropie/gamelist.xml
+		
+		xmlstarlet ed \
+			--inplace \
+			--subnode "/gameList" --type elem -n game -v ""  \
+			--subnode "/gameList/game[last()]" --type elem -n path -v "./rclone_script-menu.sh" \
+			--subnode "/gameList/game[last()]" --type elem -n name -v "RCLONE_SCRIPT menu" \
+			--subnode "/gameList/game[last()]" --type elem -n desc -v "Launches a menu allowing you to start a full sync, configure RCLONE_SCRIPT or even uninstall it" \
+			~/.emulationstation/gamelists/retropie/gamelist.xml
 		
 		if [[ $? -eq 0 ]]
 		then
@@ -1098,7 +1106,7 @@ function 9aSaveConfiguration ()
 	
 	echo "remotebasedir=${remotebasedir}" > ~/scripts/rclone_script/rclone_script.ini
 	echo "shownotifications=${shownotifications}" >> ~/scripts/rclone_script/rclone_script.ini
-	echo "logfile=~/scripts/rclone_script.log" >> ~/scripts/rclone_script/rclone_script.ini
+	echo "logfile=~/scripts/rclone_script/rclone_script.log" >> ~/scripts/rclone_script/rclone_script.ini
 	echo "debug=0" >> ~/scripts/rclone_script/rclone_script.ini
 	
 	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tDONE\n" >> ./rclone_script-install.log
