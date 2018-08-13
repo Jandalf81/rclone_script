@@ -923,7 +923,7 @@ function 6bCheckLocalSystemDirectories ()
 			then
 				printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tFOUND symlink ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 			else
-				ln -s ~/RetroPie/saves/${system} ~/RetroPie/saves/$(readlink ~/RetroPie/roms/${system})
+				ln -s ~/RetroPie/saves/$(readlink ~/RetroPie/roms/${system}) ~/RetroPie/saves/${system}
 				printf "$(date +%FT%T%:z):\t6bCheckLocalSystemDirectories\tCREATED symlink ${system}\n" >> ~/scripts/rclone_script/rclone_script-install.log
 				retval=1
 			fi
