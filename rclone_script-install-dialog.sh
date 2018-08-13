@@ -680,9 +680,6 @@ function 4bCreateRCLONE_SCRIPTMenuItem ()
 	# check if menu item exists
 	if [[ $(xmlstarlet sel -t -v "count(/gameList/game[path='./rclone_script-menu.sh'])" ~/.emulationstation/gamelists/retropie/gamelist.xml) -eq 0 ]]
 	then
-		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tFOUND\n" >> ./rclone_script-install.log
-		return 0
-	else
 		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tNOT FOUND\n" >> ./rclone_script-install.log
 		
 		# sed -i "/<\/gameList>/c\\\\t<game>\n\t\t<path>.\/rclone_script-menu.sh<\/path>\n\t\t<name>RCLONE_SCRIPT menu<\/name>\n\t\t<desc>Customize RCLONE_SCRIPT, start a full sync, uninstall RCLONE_SCRIPT<\/desc>\n\t\t<image></image>\n\t<\/game>\n<\/gameList>" ~/.emulationstation/gamelists/retropie/gamelist.xml
@@ -703,6 +700,9 @@ function 4bCreateRCLONE_SCRIPTMenuItem ()
 			printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tERROR\n" >> ./rclone_script-install.log
 			return 1
 		fi
+	else
+		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tFOUND\n" >> ./rclone_script-install.log
+		return 0
 	fi
 }
 
