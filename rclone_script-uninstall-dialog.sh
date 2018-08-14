@@ -19,6 +19,9 @@ UNDERLINE="\Zu"
 backtitle="RCLONE_SCRIPT uninstaller"
 logfile=~/scripts/rclone_script/rclone_script-uninstall.log
 
+source ~/scripts/rclone_script/rclone_script.ini
+oldRemote=""
+
 
 ##################
 # WELCOME DIALOG #
@@ -111,12 +114,10 @@ function initSteps ()
 	steps[14]="6. Local SAVEFILE directory"
 	steps[15]="	6a. Move savefiles to default			[ waiting...  ]"
 	steps[16]="	6b. Remove local SAVEFILE directory		[ waiting...  ]"
-	steps[17]="7. Remote SAVEFILE directory"
-	steps[18]="	7a. Remove remote SAVEFILE directory		[ waiting...  ]"
-	steps[19]="8. Configure RETROARCH"
-	steps[20]="	8a. Reset local SAVEFILE directories		[ waiting...  ]"
-	steps[21]="9 Finalizing"
-	steps[22]="	9a. Remove UNINSTALL script			[ waiting...  ]"
+	steps[17]="7. Configure RETROARCH"
+	steps[18]="	7a. Reset local SAVEFILE directories		[ waiting...  ]"
+	steps[19]="8 Finalizing"
+	steps[20]="	8a. Remove UNINSTALL script			[ waiting...  ]"
 }
 
 # Update item of $STEPS() and show updated progress dialog
@@ -167,6 +168,23 @@ function updateStep ()
 	dialogShowProgress ${percent}
 }
 
+# Show summary dialog
+function dialogShowSummary ()
+{
+	dialog \
+		--backtitle "${backtitle}" \
+		--title "Summary" \
+		--ascii-lines \
+		--colors \
+		--no-collapse \
+		--cr-wrap \
+		--yesno \
+			"\n${GREEN}All done!${NORMAL}\n\nRCLONE_SCRIPT and its components have been removed. From now on, your saves and states will ${RED}NOT${NORMAL} be synchronized any longer. Your local savefiles have been moved to their default directories (inside each ROMS directory). Your remote files on\n	${YELLOW}${oldRemote}${NORMAL}\nhave ${GREEN}NOT${NORMAL} been removed.\n\nTo finish the uninstaller you should reboot your RetroPie now.\n\n${RED}Reboot RetroPie now?${NORMAL}" 25 90
+	
+	case $? in
+		0) sudo shutdown -r now  ;;
+	esac
+}
 
 #########################
 # UNINSTALLER FUNCTIONS #
@@ -178,12 +196,32 @@ function uninstaller ()
 	initSteps
 	dialogShowProgress 0
 	
+	saveRemote
+	
 	1RCLONE
 	2PNGVIEW
 	3IMAGEMAGICK
 	4RCLONE_SCRIPT
 	5RUNCOMMAND
 	6LocalSAVEFILEDirectory
+	7RetroArch
+	8Finalize
+	
+	dialogShowSummary
+}
+
+function saveRemote ()
+{
+	# list all remotes and their type
+	remotes=$(rclone listremotes -l)
+	
+	# get line with RETROPIE remote
+	retval=$(grep -i "^retropie:" <<< ${remotes})
+
+	remoteType="${retval#*:}"
+	remoteType=$(echo ${remoteType} | xargs)
+	
+	oldRemote="retropie:${remotebasedir} (${remoteType})"
 }
 
 function 1RCLONE ()
@@ -416,30 +454,148 @@ function 6LocalSAVEFILEDirectory ()
 #	echo "." > ~/RetroPie/saves/gba/datei_${counter}.srm
 #	((counter++))
 #done
-
-	# start copy task in background, pipe numbered output into COPY.TXT and to LOGFILE
-	$(cp -v -r ~/RetroPie/saves/* ~/RetroPie/roms | cat -n | tee copy.txt | cat >> "${logfile}") &
-	
-	# show content of COPY.TXT
-	dialog \
-		--backtitle "${backtitle}" \
-		--title "Move savefiles to default" \
-		--ascii-lines \
-		--colors \
-		--no-collapse \
-		--cr-wrap \
-		--tailbox copy.txt 40 120
+	if [ -d ~/RetroPie/saves ]
+	then
+		# start copy task in background, pipe numbered output into COPY.TXT and to LOGFILE
+		$(cp -v -r ~/RetroPie/saves/* ~/RetroPie/roms | cat -n | tee copy.txt | cat >> "${logfile}") &
 		
-	wait
-	
-	rm copy.txt
-	
-#rm ~/RetroPie/saves/gba/datei*
-#rm ~/RetroPie/roms/gba/datei*
+		# show content of COPY.TXT
+		dialog \
+			--backtitle "${backtitle}" \
+			--title "Copying savefiles to default..." \
+			--ascii-lines \
+			--colors \
+			--no-collapse \
+			--cr-wrap \
+			--tailbox copy.txt 40 120
+			
+		wait
+		
+		rm copy.txt
+		
+	#rm ~/RetroPie/saves/gba/datei*
+	#rm ~/RetroPie/roms/gba/datei*
 
-	updateStep "6a" "done" 72
+		updateStep "6a" "done" 72
+	else
+		printf "$(date +%FT%T%:z):\t6a moveFilesToDefault\tNOT FOUND\n" >> "${logfile}"
+		updateStep "6a" "not found" 72
+	fi
 	
 # 6b. Remove local SAVEFILE directory
+	printf "$(date +%FT%T%:z):\t6b removeLocalSAVEFILEbasedir\tSTART\n" >> "${logfile}"
+	updateStep "6b" "in progress" 72
+	
+	if [ -d ~/RetroPie/saves ]
+	then
+		# start remove task in background, pipe numbered output into DELETE.TXT and to LOGFILE
+		$(sudo rm --recursive --force --verbose ~/RetroPie/saves | cat -n | tee delete.txt | cat >> "${logfile}") &
+		
+		# show content of REMOVE.TXT
+		dialog \
+			--backtitle "${backtitle}" \
+			--title "Removing savefiles from local base dir..." \
+			--ascii-lines \
+			--colors \
+			--no-collapse \
+			--cr-wrap \
+			--tailbox delete.txt 40 120
+			
+		wait
+		
+		rm delete.txt
+		
+		printf "$(date +%FT%T%:z):\t6b removeLocalSAVEFILEbasedir\tDONE\n" >> "${logfile}"
+		updateStep "6b" "done" 80
+	else
+		printf "$(date +%FT%T%:z):\t6b removeLocalSAVEFILEbasedir\tNOT FOUND\n" >> "${logfile}"
+		updateStep "6b" "skipped" 80
+	fi
+	
+	printf "$(date +%FT%T%:z):\t6LocalSAVEFILEDirectory\tDONE\n" >> "${logfile}"
+}
+
+function 7RetroArch ()
+{
+	printf "$(date +%FT%T%:z):\t7RetroArch\tSTART\n" >> "${logfile}"
+
+# 7a. Reset local SAVEFILE directories
+	printf "$(date +%FT%T%:z):\t7a resetSAVEFILEdirectories\tSTART\n" >> "${logfile}"
+	updateStep "7a" "in progress" 80
+	
+	local found=0
+	
+	# for each directory...
+	for directory in /opt/retropie/configs/*
+	do
+		system="${directory##*/}"
+		
+		# skip system "all"
+		if [ "${system}" == "all" ]
+		then
+			continue
+		fi
+		
+		# check if there'a system specific RETROARCH.CFG
+		if [ -f "${directory}/retroarch.cfg" ]
+		then
+			printf "$(date +%FT%T%:z):\t7a resetSAVEFILEdirectories\tFOUND retroarch.cfg for ${system}\n" >> "${logfile}"
+			
+			# check if RETROARCH.CFG contains SAVEFILE pointing to ~/RetroPie/saves/<SYSTEM>
+			if [[ $(grep -c "^savefile_directory = \"~/RetroPie/saves/${system}\"" ${directory}/retroarch.cfg) -gt 0 ]]
+			then
+				printf "$(date +%FT%T%:z):\t7a resetSAVEFILEdirectories\tFOUND savefile_directory\n" >> "${logfile}"
+				found=$(($found + 1))
+				# replace parameter
+				sed -i "/^savefile_directory = \"~\/RetroPie\/saves\/${system}\"/c\savefile_directory = \"default\"" ${directory}/retroarch.cfg
+				printf "$(date +%FT%T%:z):\t7a resetSAVEFILEdirectories\tREPLACED savefile_directory\n" >> "${logfile}"
+			else
+				printf "$(date +%FT%T%:z):\t7a resetSAVEFILEdirectories\tNOT FOUND savefile_directory\n" >> "${logfile}"
+			fi
+			
+			# check if RETROARCH.CFG contains SAVESTATE pointing to ~/RetroPie/saves/<SYSTEM>
+			if [[ $(grep -c "^savestate_directory = \"~/RetroPie/saves/${system}\"" ${directory}/retroarch.cfg) -gt 0 ]]
+			then
+				printf "$(date +%FT%T%:z):\t7a resetSAVESTATEdirectories\tFOUND savestate_directory\n" >> "${logfile}"
+				found=$(($found + 1))
+				# replace parameter
+				sed -i "/^savestate_directory = \"~\/RetroPie\/saves\/${system}\"/c\savestate_directory = \"default\"" ${directory}/retroarch.cfg
+				printf "$(date +%FT%T%:z):\t7a resetSAVESTATEdirectories\tREPLACED savestate_directory\n" >> "${logfile}"
+			else
+				printf "$(date +%FT%T%:z):\t7a resetSAVESTATEdirectories\tNOT FOUND savestate_directory\n" >> "${logfile}"
+			fi
+		fi
+	done
+
+	printf "$(date +%FT%T%:z):\t7a resetSAVEFILEdirectories\tDINE\n" >> "${logfile}"
+	if [[ $found -eq 0 ]]
+	then
+		updateStep "7a" "not found" 88
+	else
+		updateStep "7a" "done" 88
+	fi
+
+	printf "$(date +%FT%T%:z):\t7RetroArch\tDONE\n" >> "${logfile}"
+}
+
+function 8Finalize ()
+{
+	printf "$(date +%FT%T%:z):\t8Finalize\tSTART\n" >> "${logfile}"
+
+# 8a. Remove UNINSTALL script
+	printf "$(date +%FT%T%:z):\t8a removeUNINSTALLscript\tSTART\n" >> "${logfile}"
+	updateStep "8a" "in progress" 88
+	
+	printf "$(date +%FT%T%:z):\t8a removeUNINSTALLscript\tDONE\n" >> "${logfile}"
+	updateStep "8a" "done" 100
+	
+	printf "$(date +%FT%T%:z):\t8Finalize\tDONE\n" >> "${logfile}"
+	
+	# move LOGFILE to HOME
+	mv ~/scripts/rclone_script/rclone_script-uninstall.log ~
+	
+	# remove RCLONE_SCRIPT directory
+	rm -rf ~/scripts/rclone_script
 }
 
 
