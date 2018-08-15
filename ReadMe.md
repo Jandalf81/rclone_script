@@ -19,7 +19,7 @@ and follow the instructions.
 I recommend reading this page completely before actually doing this! You can also look at these Wiki pages to better understand what this script does:
 
 * [RCLONE_SCRIPT-install](../../wiki/RCLONE_SCRIPT-install)
-* [RCLONE_SCRIPT in action](../../wiki/RCLONE_SCRIPT in action)
+* [RCLONE_SCRIPT in action](../../wiki/RCLONE_SCRIPT%20in%20action)
 * [RCLONE_SCRIPT-menu](../../wiki/RCLONE_SCRIPT-menu)
 
 ## Again, what does this do?
