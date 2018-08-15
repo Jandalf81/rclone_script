@@ -34,7 +34,6 @@ logfile=~/scripts/rclone_script/rclone_script-install.log
 dialog \
 	--backtitle "${backtitle}" \
 	--title "Welcome" \
-	--ascii-lines \
 	--colors \
 	--no-collapse \
 	--cr-wrap \
@@ -54,7 +53,6 @@ function dialogBetaWarning ()
 	dialog \
 		--backtitle "${backtitle}" \
 		--title "Beta Warning" \
-		--ascii-lines \
 		--colors \
 		--no-collapse \
 		--cr-wrap \
@@ -90,10 +88,11 @@ function dialogShowProgress ()
 	
 	buildProgress
 	
+	clear
+	
 	echo "${percent}" | dialog \
 		--stdout \
 		--colors \
-		--ascii-lines \
 		--no-collapse \
 		--cr-wrap \
 		--backtitle "${backtitle}" \
@@ -119,7 +118,6 @@ function dialogShowSummary ()
 	dialog \
 		--backtitle "${backtitle}" \
 		--title "Summary" \
-		--ascii-lines \
 		--colors \
 		--no-collapse \
 		--cr-wrap \
@@ -381,7 +379,6 @@ function 1dCreateRCLONEremote ()
 	dialog \
 		--stdout \
 		--colors \
-		--ascii-lines \
 		--no-collapse \
 		--cr-wrap \
 		--backtitle "${backtitle}" \
@@ -397,7 +394,6 @@ function 1dCreateRCLONEremote ()
 		dialog \
 			--stdout \
 			--colors \
-			--ascii-lines \
 			--no-collapse \
 			--cr-wrap \
 			--backtitle "${backtitle}" \
@@ -712,7 +708,6 @@ function 4cConfigureRCLONE_SCRIPT ()
 	remotebasedir=$(dialog \
 		--stdout \
 		--colors \
-		--ascii-lines \
 		--no-collapse \
 		--cr-wrap \
 		--backtitle "${backtitle}" \
@@ -723,7 +718,6 @@ function 4cConfigureRCLONE_SCRIPT ()
 	dialog \
 		--stdout \
 		--colors \
-		--ascii-lines \
 		--no-collapse \
 		--cr-wrap \
 		--backtitle "${backtitle}" \
@@ -1142,6 +1136,8 @@ function 9aSaveConfiguration ()
 # MAIN #
 ########
 
+# make puTTY draw fancy lines
+export NCURSES_NO_UTF8_ACS=1
 
 if [ "${branch}" == "beta" ]
 then

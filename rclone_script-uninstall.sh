@@ -30,7 +30,6 @@ dialog \
 	--stdout \
 	--backtitle "${backtitle}" \
 	--title "Welcome" \
-	--ascii-lines \
 	--colors \
 	--no-collapse \
 	--cr-wrap \
@@ -77,7 +76,6 @@ function dialogShowProgress ()
 	echo "${percent}" | dialog \
 		--stdout \
 		--colors \
-		--ascii-lines \
 		--no-collapse \
 		--cr-wrap \
 		--backtitle "${backtitle}" \
@@ -174,7 +172,6 @@ function dialogShowSummary ()
 	dialog \
 		--backtitle "${backtitle}" \
 		--title "Summary" \
-		--ascii-lines \
 		--colors \
 		--no-collapse \
 		--cr-wrap \
@@ -464,8 +461,7 @@ function 6LocalSAVEFILEDirectory ()
 		dialog \
 			--backtitle "${backtitle}" \
 			--title "Copying savefiles to default..." \
-			--ascii-lines \
-			--colors \
+				--colors \
 			--no-collapse \
 			--cr-wrap \
 			--tailbox copy.txt 40 120
@@ -496,7 +492,6 @@ function 6LocalSAVEFILEDirectory ()
 		dialog \
 			--backtitle "${backtitle}" \
 			--title "Removing savefiles from local base dir..." \
-			--ascii-lines \
 			--colors \
 			--no-collapse \
 			--cr-wrap \
@@ -603,5 +598,8 @@ function 8Finalize ()
 ########
 # MAIN #
 ########
+
+# make puTTY draw fancy lines
+export NCURSES_NO_UTF8_ACS=1
 
 uninstaller
