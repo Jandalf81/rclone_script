@@ -18,7 +18,7 @@ and follow the instructions.
 
 I recommend reading this page completely before actually doing this! You can also look at these Wiki pages to better understand what this script does:
 
-* [Setup of RCLONE_SCRIPT](./wiki/Setup-of-RCLONE_SCRIPT)
+* [Setup of RCLONE_SCRIPT](../../wiki/Setup-of-RCLONE_SCRIPT)
 * Configure RCLONE_SCRIPT
 * RCLONE_SCRIPT menu
 
