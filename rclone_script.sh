@@ -10,7 +10,8 @@ UNDERLINE=$(tput smul)
 
 
 # include settings file
-source ~/scripts/rclone_script/rclone_script.ini
+config=~/scripts/rclone_script/rclone_script.ini
+source ${config}
 
 
 # parameters
@@ -21,14 +22,18 @@ rom="$4"
 command="$5"
 
 
-log ()
+####################
+# HELPER FUNCTIONS #
+####################
+
+function log ()
 {
 	severity=$1
 	message=$2
 	printf "$(date +%FT%T%:z):\t${severity}:\t${message}\n" >> ${logfile}
 }
 
-debug ()
+function debug ()
 {
 	log "DEBUG" "direction: ${direction}"
 	log "DEBUG" "system: ${system}"
@@ -42,7 +47,7 @@ debug ()
 	log "DEBUG" "romfileext: ${romfileext}"
 }
 
-killOtherNotification ()
+function killOtherNotification ()
 {
 	# get PID of other PNGVIEW process
 	otherPID=$(pgrep --full pngview)
@@ -57,8 +62,14 @@ killOtherNotification ()
 	fi
 }
 
-showNotification ()
+function showNotification ()
 {
+	# Quit here, if Notifications are not to be shown and they are not forced
+	if [ "${showNotifications}" == "FALSE" ] && [ "$6" != "force" ]
+	then
+		return
+	fi
+	
 	message="$1"
 	
 	if [ "$2" = "" ]
@@ -101,7 +112,7 @@ showNotification ()
 	nohup pngview -b 0 -l 10000 ~/scripts/rclone_script/rclone_script-notification.png -x ${posx} -y ${posy} -t ${timeout} &>/dev/null &
 }
 
-getROMFileName ()
+function getROMFileName ()
 {
 	rompath="${rom%/*}" # directory containing $rom
 	romfilename="${rom##*/}" # filename of $rom, including extension
@@ -109,13 +120,13 @@ getROMFileName ()
 	romfileext="${romfilename#*.}" # extension of $rom
 }
 
-prepareFilter ()
+function prepareFilter ()
 {
 	filter="${romfilebase//\[/\\[}"
 	filter="${filter//\]/\\]}"
 }
 
-getTypeOfRemote ()
+function getTypeOfRemote ()
 {
 	# list all remotes and their type
 	remotes=$(rclone listremotes -l)
@@ -127,8 +138,19 @@ getTypeOfRemote ()
 	remoteType=$(echo ${remoteType} | xargs)
 }
 
-downloadSaves ()
+
+##################
+# SYNC FUNCTIONS #
+##################
+
+function downloadSaves ()
 {
+	if [ "${syncOnStartStop}" == "FALSE" ]
+	then
+		showNotification "!!! Synchronization is currently disabled !!!" "red" "" "" "" "forced"
+		return
+	fi
+
 	log "INFO" "Started ${romfilename} (${system})"
 	log "INFO" "Downloading saves and states from ${remoteType}..."
 	showNotification "Downloading saves and states from ${remoteType}..."
@@ -167,8 +189,14 @@ downloadSaves ()
 	fi
 }
 
-uploadSaves ()
+function uploadSaves ()
 {
+	if [ "${syncOnStartStop}" == "FALSE" ]
+	then
+		showNotification "!!! Synchronization is currently disabled !!!" "red" "" "" "" "forced"
+		return
+	fi
+
 	log "INFO" "Stopped ${romfilename} (${system})"
 	log "INFO" "Uploading saves and states to ${remoteType}..."
 	showNotification "Uploading saves and states to ${remoteType}..."
@@ -195,28 +223,10 @@ uploadSaves ()
 	fi
 }
 
-doFullSync ()
-{
-	# header
-	printf "${UNDERLINE}Full synchronization\n\n"
 
-	# Download newer files from remote to local
-	printf "${NORMAL}Downloading newer files from ${YELLOW}${YELLOW}retropie:${remotebasedir} (${remoteType}) ${NORMAL}to ${YELLOW}~/RetroPie/saves/${NORMAL}...\n"
-	rclone copy retropie:${remotebasedir}/ ~/RetroPie/saves/ --update --verbose
-	printf "${GREEN}Done\n"
-
-	printf "\n"
-
-	# Upload newer files from local to remote
-	printf "${NORMAL}Uploading newer files from ${YELLOW}~/RetroPie/saves/${NORMAL} to ${YELLOW}${YELLOW}retropie:${remotebasedir} (${remoteType})${NORMAL} ...\n"
-	rclone copy ~/RetroPie/saves/ retropie:${remotebasedir}/ --update --verbose
-	printf "${GREEN}Done\n"
-
-	printf "\n"
-	printf "${NORMAL}Returning to EmulationStation in ${YELLOW}10 seconds ${NORMAL}...\n"
-	read -t 10
-}
-
+########
+# MAIN #
+########
 
 if [ "${debug}" = "1" ]; then debug; fi
 
@@ -234,10 +244,4 @@ then
 	prepareFilter
 	getTypeOfRemote
 	downloadSaves
-fi
-
-if [ "${direction}" == "full" ]
-then
-	getTypeOfRemote
-	doFullSync
 fi
