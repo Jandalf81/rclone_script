@@ -16,7 +16,7 @@ REVERSE="\Zr"
 UNDERLINE="\Zu"
 
 
-backtitle="RCLONE_SCRIPT uninstaller"
+backtitle="RCLONE_SCRIPT uninstaller (https://github.com/Jandalf81/rclone_script)"
 logfile=~/scripts/rclone_script/rclone_script-uninstall.log
 
 source ~/scripts/rclone_script/rclone_script.ini

@@ -24,7 +24,7 @@ branch="beta"
 remotebasedir=""
 shownotifications=""
 
-backtitle="RCLONE_SCRIPT installer"
+backtitle="RCLONE_SCRIPT installer (https://github.com/Jandalf81/rclone_script)"
 logfile=~/scripts/rclone_script/rclone_script-install.log
 
 

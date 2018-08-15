@@ -19,6 +19,8 @@ UNDERLINE="\Zu"
 config=~/scripts/rclone_script/rclone_script.ini
 source ${config}
 
+backtitle="RCLONE_SCRIPT menu (https://github.com/Jandalf81/rclone_script)"
+
 
 ####################
 # HELPER FUNCTIONS #
@@ -86,7 +88,7 @@ function main_menu ()
 		choice=$(dialog \
 			--stdout \
 			--colors \
-			--backtitle "RCLONE_SCRIPT menu" \
+			--backtitle "${backtitle}" \
 			--title "main menu" \
 			--default-item "${choice}" \
 			--menu "\nWhat do you want to do?" 25 75 20 \
