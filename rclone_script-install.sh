@@ -39,8 +39,8 @@ dialog \
 	--no-collapse \
 	--cr-wrap \
 	--yesno \
-		"\nThis script will configure RetroPie so that your savefiles and statefiles will be ${YELLOW}synchronized with a remote destination${NORMAL}. Several packages and scripts will be installed, see\n\n	https://github.com/Jandalf81/rclone_script/blob/master/ReadMe.md\n\nfor a rundown. In short, any time you ${GREEN}start${NORMAL} or ${RED}stop${NORMAL} a ROM the savefiles and savestates for that ROM will be ${GREEN}down-${NORMAL} and ${RED}uploaded${NORMAL} ${GREEN}from${NORMAL} and ${RED}to${NORMAL} a remote destination. To do so, RetroPie will be configured to put all savefiles and statefiles in distinct directories, seperated from the ROMS directories. If you already have some savefiles there, you will need to ${YELLOW}move them manually${NORMAL} after installation.\n\nAre you sure you wish to continue?" \
-	20 90 2>&1 > /dev/tty \
+		"\nThis script will configure RetroPie so that your savefiles and statefiles will be ${YELLOW}synchronized with a remote destination${NORMAL}. Several packages and scripts will be installed, see\n\n	https://github.com/Jandalf81/rclone_script/blob/master/ReadMe.md\n\nfor a rundown. In short, any time you ${GREEN}start${NORMAL} or ${RED}stop${NORMAL} a ROM the savefiles and savestates for that ROM will be ${GREEN}down-${NORMAL} and ${RED}uploaded${NORMAL} ${GREEN}from${NORMAL} and ${RED}to${NORMAL} a remote destination. To do so, RetroPie will be configured to put all savefiles and statefiles in distinct directories, seperated from the ROMS directories. The installer will guide you through the necessary steps. If you wish to see what exactly is done at each step, open a second console and execute\n	${YELLOW}tail -f ~/scripts/rclone_script/rclone_script-install.log${NORMAL}\n\nIf you already have some savefiles in the ROMS directory, you will need to ${YELLOW}move them manually${NORMAL} after installation.\n\nAre you sure you wish to continue?" \
+	25 90 2>&1 > /dev/tty \
     || exit
 
 	
@@ -90,9 +90,6 @@ function dialogShowProgress ()
 	
 	buildProgress
 	
-	clear
-	clear
-	
 	echo "${percent}" | dialog \
 		--stdout \
 		--colors \
@@ -127,7 +124,7 @@ function dialogShowSummary ()
 		--no-collapse \
 		--cr-wrap \
 		--yesno \
-			"\n${GREEN}All done!${NORMAL}\n\nFrom now on, all your saves and states will be synchronized each time you start or stop a ROM.\n\nAll system will put their saves and states in\n	Local: \"${YELLOW}~/RetroPie/saves/<SYSTEM>${NORMAL}\"\n	Remote: \"${YELLOW}retropie:${remotebasedir}/<SYSTEM>${NORMAL}\" (${remoteType})\nIf you already have some saves in the ROM directories, you need to move them there manually now! Afterward, you should ${red}reboot${NORMAL} your RetroPie. Then, you should start a full sync via\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 1 Full sync${NORMAL}\n\nStart\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 9 uninstall${NORMAL}\nto revert all changes and remove this script.\n\nTo finish the installer you should reboot your RetroPie now.\n\n${RED}Reboot RetroPie now?${NORMAL}" 25 90
+			"\n${GREEN}All done!${NORMAL}\n\nFrom now on, all your saves and states will be synchronized each time you start or stop a ROM.\n\nAll systems will put their saves and states in\n	Local: \"${YELLOW}~/RetroPie/saves/<SYSTEM>${NORMAL}\"\n	Remote: \"${YELLOW}retropie:${remotebasedir}/<SYSTEM>${NORMAL}\" (${remoteType})\nIf you already have some saves in the ROM directories, you need to move them there manually now! Afterward, you should ${red}reboot${NORMAL} your RetroPie. Then, you should start a full sync via\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 1 Full sync${NORMAL}\n\nStart\n	${YELLOW}RetroPie / RCLONE_SCRIPT menu / 9 uninstall${NORMAL}\nto revert all changes and remove this script.\n\nTo finish the installer you should reboot your RetroPie now.\n\n${RED}Reboot RetroPie now?${NORMAL}" 25 90
 	
 	case $? in
 		0) sudo shutdown -r now  ;;
