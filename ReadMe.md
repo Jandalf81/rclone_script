@@ -10,9 +10,9 @@ This script will setup different things on your RetroPie in order to automatical
 
 Just install this via
 ```bash
-wget -N -P ~/scripts https://raw.githubusercontent.com/Jandalf81/rclone_script/master/rclone_script-install.sh;
-chmod 755 ~/scripts/rclone_script-install.sh;
-~/scripts/rclone_script-install.sh;
+wget -N -P ~/scripts/rclone_script https://raw.githubusercontent.com/Jandalf81/rclone_script/master/rclone_script-install.sh;
+chmod 755 ~/scripts/rclone_script/rclone_script-install.sh;
+~/scripts/rclone_script/rclone_script-install.sh;
 ```
 and follow the instructions.
 
