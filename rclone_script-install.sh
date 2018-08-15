@@ -1137,9 +1137,6 @@ function 9aSaveConfiguration ()
 # MAIN #
 ########
 
-# make puTTY draw fancy lines
-export NCURSES_NO_UTF8_ACS=1
-
 if [ "${branch}" == "beta" ]
 then
 	dialogBetaWarning

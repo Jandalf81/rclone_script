@@ -599,7 +599,4 @@ function 8Finalize ()
 # MAIN #
 ########
 
-# make puTTY draw fancy lines
-export NCURSES_NO_UTF8_ACS=1
-
 uninstaller
