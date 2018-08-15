@@ -676,20 +676,19 @@ function 4bCreateRCLONE_SCRIPTMenuItem ()
 {
 	printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tSTART\n" >> "${logfile}"
 	
-	# move menu script
-	mv --force ~/scripts/rclone_script/rclone_script-menu.sh ~/RetroPie/retropiemenu >> "${logfile}"
+	# create redirect script
+	printf "#!/bin/bash\n~/scripts/rclone_script/rclone_script-menu.sh" > ~/RetroPie/retropiemenu/rclone_script-redirect.sh
+	chmod +x ~/RetroPie/retropiemenu/rclone_script-redirect.sh
 	
 	# check if menu item exists
-	if [[ $(xmlstarlet sel -t -v "count(/gameList/game[path='./rclone_script-menu.sh'])" ~/.emulationstation/gamelists/retropie/gamelist.xml) -eq 0 ]]
+	if [[ $(xmlstarlet sel -t -v "count(/gameList/game[path='./rclone_script-redirect.sh'])" ~/.emulationstation/gamelists/retropie/gamelist.xml) -eq 0 ]]
 	then
 		printf "$(date +%FT%T%:z):\t4bCreateRCLONE_SCRIPTMenuItem\tNOT FOUND\n" >> "${logfile}"
-		
-		# sed -i "/<\/gameList>/c\\\\t<game>\n\t\t<path>.\/rclone_script-menu.sh<\/path>\n\t\t<name>RCLONE_SCRIPT menu<\/name>\n\t\t<desc>Customize RCLONE_SCRIPT, start a full sync, uninstall RCLONE_SCRIPT<\/desc>\n\t\t<image></image>\n\t<\/game>\n<\/gameList>" ~/.emulationstation/gamelists/retropie/gamelist.xml
-		
+			
 		xmlstarlet ed \
 			--inplace \
 			--subnode "/gameList" --type elem -n game -v ""  \
-			--subnode "/gameList/game[last()]" --type elem -n path -v "./rclone_script-menu.sh" \
+			--subnode "/gameList/game[last()]" --type elem -n path -v "./rclone_script-redirect.sh" \
 			--subnode "/gameList/game[last()]" --type elem -n name -v "RCLONE_SCRIPT menu" \
 			--subnode "/gameList/game[last()]" --type elem -n desc -v "Launches a menu allowing you to start a full sync, configure RCLONE_SCRIPT or even uninstall it" \
 			~/.emulationstation/gamelists/retropie/gamelist.xml

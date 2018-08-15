@@ -357,7 +357,7 @@ function 4RCLONE_SCRIPT ()
 	
 	local found=0
 		
-	if [[ $(xmlstarlet sel -t -v "count(/gameList/game[path='./rclone_script-menu.sh'])" ~/.emulationstation/gamelists/retropie/gamelist.xml) -ne 0 ]]
+	if [[ $(xmlstarlet sel -t -v "count(/gameList/game[path='./rclone_script-redirect.sh.sh'])" ~/.emulationstation/gamelists/retropie/gamelist.xml) -ne 0 ]]
 	then
 		found=$(($found + 1))
 		
@@ -365,7 +365,7 @@ function 4RCLONE_SCRIPT ()
 		
 		xmlstarlet ed \
 			--inplace \
-			--delete "//game[path='./rclone_script-menu.sh']" \
+			--delete "//game[path='./rclone_script-redirect.sh']" \
 			~/.emulationstation/gamelists/retropie/gamelist.xml
 			
 		printf "$(date +%FT%T%:z):\t4bRCLONE_SCRIPTMenuItem\tREMOVED\n" >> "${logfile}"
@@ -373,13 +373,14 @@ function 4RCLONE_SCRIPT ()
 		printf "$(date +%FT%T%:z):\t4bRCLONE_SCRIPTMenuItem\tNOT FOUND\n" >> "${logfile}"
 	fi
 	
-	if [ -f ~/RetroPie/retropiemenu/rclone_script-menu.sh ]
+	if [ -f ~/RetroPie/retropiemenu/rclone_script-redirect.sh ]
 	then
 		found=$(($found + 1))
 		
 		printf "$(date +%FT%T%:z):\t4bRCLONE_SCRIPTMenuItemScript\tFOUND\n" >> "${logfile}"
 		
-		sudo rm ~/RetroPie/retropiemenu/rclone_script-menu.sh >> "${logfile}"
+		sudo rm ~/RetroPie/retropiemenu/rclone_script-redirect.sh >> "${logfile}"
+		sudo rm ~/scripts/rclone_script/rclone_script-menu.sh >> "${logfile}"
 		
 		printf "$(date +%FT%T%:z):\t4bRCLONE_SCRIPTMenuItemScript\tREMOVED\n" >> "${logfile}"
 	else
