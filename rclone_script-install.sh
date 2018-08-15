@@ -18,7 +18,7 @@ UNDERLINE="\Zu"
 
 # global variables
 url="https://raw.githubusercontent.com/Jandalf81/rclone_script"
-branch="beta"
+branch="master"
 
 # configuration variables
 remotebasedir=""
