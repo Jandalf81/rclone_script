@@ -142,18 +142,18 @@ function initSteps ()
 {
 	steps[1]="1. RCLONE"
 	steps[2]="	1a. Test for RCLONE binary			[ waiting...  ]"
-	steps[3]="	1b. Get RCLONE binary				[ waiting...  ]"
+	steps[3]="	1b. Download RCLONE binary			[ waiting...  ]"
 	steps[4]="	1c. Test RCLONE remote				[ waiting...  ]"
 	steps[5]="	1d. Create RCLONE remote			[ waiting...  ]"
 	steps[6]="2. PNGVIEW"
 	steps[7]="	2a. Test for PNGVIEW binary			[ waiting...  ]"
-	steps[8]="	2b. Get PNGVIEW source				[ waiting...  ]"
+	steps[8]="	2b. Download PNGVIEW source			[ waiting...  ]"
 	steps[9]="	2c. Compile PNGVIEW				[ waiting...  ]"
 	steps[10]="3. IMAGEMAGICK"
 	steps[11]="	3a. Test for IMAGEMAGICK			[ waiting...  ]"
-	steps[12]="	3b. Get IMAGEMAGICK				[ waiting...  ]"
+	steps[12]="	3b. apt-get install IMAGEMAGICK			[ waiting...  ]"
 	steps[13]="4. RCLONE_SCRIPT"
-	steps[14]="	4a. Get RCLONE_SCRIPT files			[ waiting...  ]"
+	steps[14]="	4a. Download RCLONE_SCRIPT files		[ waiting...  ]"
 	steps[15]="	4b. Create RCLONE_SCRIPT menu item		[ waiting...  ]"
 	steps[16]="	4c. Configure RCLONE_SCRIPT			[ waiting...  ]"
 	steps[17]="5. RUNCOMMAND"
@@ -385,7 +385,8 @@ function 1dCreateRCLONEremote ()
 		--title "Installer" \
 		--msgbox "\nPlease create a new remote within RCLONE now. Name that remote ${RED}retropie${NORMAL}. Please consult the RCLONE documentation for further information:\n	https://www.rclone.org\n\nOpening RCLONE CONFIG now..." 20 50 \
 		2>&1 > /dev/tty
-			
+		
+	clear
 	rclone config
 	
 	1cTestRCLONEremote

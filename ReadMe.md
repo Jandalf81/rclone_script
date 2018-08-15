@@ -16,7 +16,11 @@ chmod 755 ~/scripts/rclone_script/rclone_script-install.sh;
 ```
 and follow the instructions.
 
-I recommend reading this page completely before actually doing this! Also, I made [this IMGur album](https://imgur.com/a/nOFxP5Y) to show you the installation process and what happens afterwards.
+I recommend reading this page completely before actually doing this! You can also look at these Wiki pages to better understand what this script does:
+
+* [Setup of RCLONE_SCRIPT](wiki/Setup-of-RCLONE_SCRIPT)
+* Configure RCLONE_SCRIPT
+* RCLONE_SCRIPT menu
 
 ## Again, what does this do?
 

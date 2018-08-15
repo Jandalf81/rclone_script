@@ -102,7 +102,7 @@ function initSteps ()
 	steps[4]="2. PNGVIEW"
 	steps[5]="	2a. Remove PNGVIEW binary			[ waiting...  ]"
 	steps[6]="3. IMAGEMAGICK"
-	steps[7]="	3a. Remove IMAGEMAGICK binary			[ waiting...  ]"
+	steps[7]="	3a. apt-get remove IMAGEMAGICK			[ waiting...  ]"
 	steps[8]="4. RCLONE_SCRIPT"
 	steps[9]="	4a. Remove RCLONE_SCRIPT files			[ waiting...  ]"
 	steps[10]="	4b. Remove RCLONE_SCRIPT menu item		[ waiting...  ]"
