@@ -22,27 +22,32 @@ I recommend reading this page completely before actually doing this! Also, I mad
 
 Let me give you a rundown of the things this script will do:
 
-1. This script will install the _RCLONE_ binary. It will be downloaded directly from their website as the binary installable via _apt-get_ is quite old, sadly. _RCLONE_ actually is what allows us to use a number of different cloud services, see [their website](https://rclone.org/) for a complete list
-2. The script will then ask you to define a _remote_. That is the other side used for the synchronization. That remote **has** to be called _retropie_, the script will not continue without it. Please consult the [RCLONE documentation](https://rclone.org/) on how to configure remotes for different cloud services
-3. Then, _PNGVIEW_ will be downloaded, compiled and installed. That will be used to show you notifications when up- and downloading save files.
-4. _IMAGEMAGICK_ will be installed via _apt-get_, this will be used to actually create images containing the notifications which are shown by _PNGVIEW_
-5. The other scripts you see here will now be downloaded. They are used to control _RCLONE_ whenever it needs to sync your save files. Notice that there's also a script to remove all of this from your RetroPie.
-6. Some scripts from RetroPie will be changed so they call one of the scripts from step 5 which then calls _RCLONE_... Sounds complicated but you don't have to do anything (for the curious: those are the _RUNCOMMAND-ONSTART_ and _RUNCOMMAND-ONEND_ scripts)
-7. Right next to the _ROMS_ directory, a new directory _SAVES_ will be created, containing a subdirectory for each system
-8. Now, the setup script will ask you to enter a name for the remote base save directory. This is the directory where the save files will be synced to. You can enter any name you like, I recommend calling it _RetroArch_. After naming it, the setup script will create this directory and one subdirectory for each system RetroPie supports at the remote destination (if necessary)
-9. Your RetroPie will be configured so each system uses it's own directory for saves. Before, RetroPie looked for these files in the _ROMS_ directory (which made syncing them without accidentially uploading a ROM - ILLEGALLY - so much more difficult)
-10. That's it, setup is complete. If you already have some save files within the _ROMS_ directory you need to move them to their subdirectory within the _SAVES_ directory now
+1. The script will install the _RCLONE_ binary. It will be downloaded directly from their website as the binary installable via _apt-get_ is quite old, sadly. _RCLONE_ actually is what allows us to use a number of different cloud services, see [their website](https://rclone.org/) for a complete list. The script will then ask you to define a _remote_. That is the other side used for the synchronization. That remote **has** to be called _retropie_, the script will not continue without it. Please consult the [RCLONE documentation](https://rclone.org/) on how to configure remotes for different cloud services
+2. Then, _PNGVIEW_ will be downloaded, compiled and installed. That will be used to show you notifications when up- and downloading save files.
+3. _IMAGEMAGICK_ will be installed via _apt-get_, this will be used to actually create images containing the notifications which are shown by _PNGVIEW_
+4. The other scripts you see here will now be downloaded. They are used to control _RCLONE_ whenever it needs to sync your save files. Notice that there's also a script to remove all of this from your RetroPie. A new menu item in the RetroPie menu will be created which let's you control some aspects of RCLONE_SCRIPTS. Then, you'll be asked to enter the desired name of the _remote SAVEFILE base directory_. All your synchronized files will go into this directory.
+5. Some scripts from RetroPie will be changed so they call one of the scripts from step 4 which then calls _RCLONE_... Sounds complicated but you don't have to do anything
+6. Right next to the _ROMS_ directory, a new directory _SAVES_ will be created, containing a subdirectory for each system. This is where your savefiles will be locally now.
+7. The setup script will now create the _remote SAVEFILE base directory_ and one subdirectory for each system RetroPie supports at the remote destination (if necessary)
+8. Your RetroPie will be configured so each system uses it's own local directory for saves. Before, RetroPie looked for these files in the _ROMS_ directory (which made syncing them without accidentially uploading a ROM - ILLEGALLY - so much more difficult)
+9. The settings you entered during installation are then saved for future reference
+
+That's it, setup is complete. If you already have some save files within the _ROMS_ directory you need to move them to their subdirectory within the _SAVES_ directory now. Afterwards, reboot your RetroPie so the new menu item shows up
 
 ## What will RetroPie do after this script is installed?
 
-Whenever you start or stop playing a game, the acompanying save files will be down- or uploaded to the configured remote:
+Whenever you start or stop playing a game, the accompanying save files will be down- or uploaded to the configured remote:
 
 * starting a game will trigger _RCLONE_ to download save files for the game from the remote
 * stopping a game will trigger _RCLONE_ to upload save files for the game to the remote
 
-In the RetroPie menu, there will also be a new menu item "_RCLONE_SCRIPT full sync_". Starting this menu item will up- and download newer files to and from the remote, so each side should have the latest save file for each game afterwards. Please note that this will also download save files even if the acompanying ROM is not on your RetroPie.
-
 Of course, all of this only works if your RetroPie has access to the configured cloud service.
+
+In the RetroPie menu, there will also be a new menu item "_RCLONE_SCRIPT menu_". Starting this menu item will let you...
+
+* start a full sync to up- and download newer files to and from the remote, so each side should have the latest save file for each game afterwards. Please note that this will also download save files even if the accompanying ROM is not on your RetroPie.
+* toggle a setting to enable or disable the synchronization when starting or stopping a ROM. With this, you can temporarily disable that process. You' get a warning, though
+* toggle a setting to enable or disable showing a notification for the synchronization process. Also disables the warnings, so please let this be enabled
 
 ## Why do this?
 

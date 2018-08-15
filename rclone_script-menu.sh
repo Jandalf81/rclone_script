@@ -90,7 +90,7 @@ function main_menu ()
 			--title "main menu" \
 			--default-item "${choice}" \
 			--menu "\nWhat do you want to do?" 25 75 20 \
-				1 "Full sync" \
+				1 "Full synchronization of all savefiles and statefiles" \
 				2 "Toggle \"Synchronize saves on start / stop\" (currently ${statusSyncOnStartStop})" \
 				3 "Toggle \"Show notifications on sync\" (currently ${statusShowNotifications})" \
 				"" ""\
