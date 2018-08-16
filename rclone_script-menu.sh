@@ -122,11 +122,11 @@ function doFullSync ()
 	{
 		# Download newer files from remote to local
 		printf "Downloading newer files from retropie:${remotebasedir} (${remoteType}) to ~/RetroPie/saves/...\n"
-		rclone copy retropie:${remotebasedir}/ ~/RetroPie/saves/ --update --verbose 2>&1
+		rclone copy retropie:${remotebasedir}/ ~/RetroPie/saves/ --update --skip-links --exclude "readme.txt" --verbose 2>&1
 		
 		# Upload newer files from local to remote
 		printf "Uploading newer files from ~/RetroPie/saves/ to retropie:${remotebasedir} (${remoteType})...\n"
-		rclone copy ~/RetroPie/saves/ retropie:${remotebasedir}/ --update --verbose 2>&1
+		rclone copy ~/RetroPie/saves/ retropie:${remotebasedir}/ --update --skip-links --exclude "readme.txt" --verbose 2>&1
 		
 		printf "Done\n"
 	} >> ${tmpfile} & # capture output of background process
