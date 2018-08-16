@@ -65,7 +65,7 @@ function killOtherNotification ()
 function showNotification ()
 {
 	# Quit here, if Notifications are not to be shown and they are not forced
-	if [ "${showNotifications}" == "FALSE" ] && [ "$6" != "force" ]
+	if [ "${showNotifications}" == "FALSE" ] && [ "$6" != "forced" ]
 	then
 		return
 	fi
@@ -170,7 +170,7 @@ function downloadSaves ()
 			log "INFO" "Found remote files"
 			
 			# download saves and states to corresponding ROM
-			rclone copy retropie:${remotebasedir}/${system} ~/RetroPie/saves/${system} --include "${filter}.*" --update
+			rclone copy retropie:${remotebasedir}/${system} ~/RetroPie/saves/${system} --include "${filter}.*" --update >> ${logfile}
 			retval=$?
 			
 			if [ "${retval}" = "0" ]
@@ -179,13 +179,12 @@ function downloadSaves ()
 				showNotification "Downloading saves and states from ${remoteType}... Done" "green"
 			else
 				log "ERROR" "Saves could not be downloaded"
-				showNotification "Downloading saves and states from ${remoteType}... ERROR" "red"
+				showNotification "Downloading saves and states from ${remoteType}... ERROR" "red" "" "" "" "forced"
 			fi
 		fi
 	else # error with RCLONE
-		
 		log "ERROR" "Saves could not be downloaded"
-		showNotification "Downloading saves and states from ${remoteType}... ERROR" "red"
+		showNotification "Downloading saves and states from ${remoteType}... ERROR" "red" "" "" "" "forced"
 	fi
 }
 
@@ -209,7 +208,7 @@ function uploadSaves ()
 		showNotification "Uploading saves and states to ${remoteType}... No local saves found"
 	else # local files found
 		# upload saves and states to corresponding ROM
-		rclone copy ~/RetroPie/saves/${system} retropie:${remotebasedir}/${system} --include "${filter}.*" --update
+		rclone copy ~/RetroPie/saves/${system} retropie:${remotebasedir}/${system} --include "${filter}.*" --update >> ${logfile}
 		retval=$?
 		
 		if [ "${retval}" = "0" ]
@@ -218,7 +217,7 @@ function uploadSaves ()
 			showNotification "Uploading saves and states to ${remoteType}... Done" "green"
 		else
 			log "ERROR" "Saves could not be uploaded"
-			showNotification "Uploading saves and states to ${remoteType}... ERROR" "red"
+			showNotification "Uploading saves and states to ${remoteType}... ERROR" "red" "" "" "" "forced"
 		fi
 	fi
 }
