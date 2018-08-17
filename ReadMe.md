@@ -21,6 +21,7 @@ I recommend reading this page completely before actually doing this! You can als
 * [RCLONE_SCRIPT-install](../../wiki/RCLONE_SCRIPT-install)
 * [RCLONE_SCRIPT in action](../../wiki/RCLONE_SCRIPT%20in%20action)
 * [RCLONE_SCRIPT-menu](../../wiki/RCLONE_SCRIPT-menu)
+* You'll have to [manually move your savefiles](../../wiki/move-Savefiles)!
 
 ## Again, what does this do?
 
@@ -31,7 +32,7 @@ Let me give you a rundown of the things this script will do:
 3. _IMAGEMAGICK_ will be installed via _apt-get_, this will be used to actually create images containing the notifications which are shown by _PNGVIEW_
 4. The other scripts you see here will now be downloaded. They are used to control _RCLONE_ whenever it needs to sync your save files. Notice that there's also a script to remove all of this from your RetroPie. A new menu item in the RetroPie menu will be created which let's you control some aspects of RCLONE_SCRIPTS. Then, you'll be asked to enter the desired name of the _remote SAVEFILE base directory_. All your synchronized files will go into this directory.
 5. Some scripts from RetroPie will be changed so they call one of the scripts from step 4 which then calls _RCLONE_... Sounds complicated but you don't have to do anything
-6. Right next to the _ROMS_ directory, a new directory _SAVES_ will be created, containing a subdirectory for each system. This is where your savefiles will be locally now.
+6. Right next to the _ROMS_ directory, a new directory _SAVES_ will be created, containing a subdirectory for each system. This is where your savefiles will have to be locally now. See [this wiki page](../../wiki/move-Savefiles) on how to move the savefiles there, that will ***not*** be done by the script
 7. The setup script will now create the _remote SAVEFILE base directory_ and one subdirectory for each system RetroPie supports at the remote destination (if necessary)
 8. Your RetroPie will be configured so each system uses it's own local directory for saves. Before, RetroPie looked for these files in the _ROMS_ directory (which made syncing them without accidentially uploading a ROM - ILLEGALLY - so much more difficult)
 9. The settings you entered during installation are then saved for future reference
