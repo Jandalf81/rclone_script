@@ -151,8 +151,8 @@ function downloadSaves ()
 		return
 	fi
 
-	log "INFO" "Started ${romfilename} (${system})"
-	log "INFO" "Downloading saves and states from ${remoteType}..."
+	log "INFO" "Started ${system}/${romfilename} "
+	log "INFO" "Downloading saves and states for ${system}/${romfilename} from ${remoteType}..."
 	showNotification "Downloading saves and states from ${remoteType}..."
 	
 	# test for remote files
@@ -165,7 +165,7 @@ function downloadSaves ()
 		if [ "${remotefiles}" = "" ]
 		then # no remote files found
 			log "INFO" "No remote files found"
-			showNotification "Downloading saves and states from ${remoteType}... No remote saves found"
+			showNotification "Downloading saves and states from ${remoteType}... No remote files found"
 		else # remote files found
 			log "INFO" "Found remote files"
 			
@@ -178,12 +178,12 @@ function downloadSaves ()
 				log "INFO" "Done"
 				showNotification "Downloading saves and states from ${remoteType}... Done" "green"
 			else
-				log "ERROR" "Saves could not be downloaded"
+				log "ERROR" "Saves and states could not be downloaded"
 				showNotification "Downloading saves and states from ${remoteType}... ERROR" "red" "" "" "" "forced"
 			fi
 		fi
 	else # error with RCLONE
-		log "ERROR" "Saves could not be downloaded"
+		log "ERROR" "Saves and states could not be downloaded"
 		showNotification "Downloading saves and states from ${remoteType}... ERROR" "red" "" "" "" "forced"
 	fi
 }
@@ -196,16 +196,16 @@ function uploadSaves ()
 		return
 	fi
 
-	log "INFO" "Stopped ${romfilename} (${system})"
-	log "INFO" "Uploading saves and states to ${remoteType}..."
+	log "INFO" "Stopped ${system}/${romfilename} "
+	log "INFO" "Uploading saves and states for ${system}/${romfilename} to ${remoteType}..."
 	showNotification "Uploading saves and states to ${remoteType}..."
 
 	localfiles=$(find ~/RetroPie/saves/${system} -type f -iname "${filter}.*")
 	
 	if [ "${localfiles}" = "" ]
 	then # no local files found
-		log "INFO" "No local saves found"
-		showNotification "Uploading saves and states to ${remoteType}... No local saves found"
+		log "INFO" "No local saves and states found"
+		showNotification "Uploading saves and states to ${remoteType}... No local files found"
 	else # local files found
 		# upload saves and states to corresponding ROM
 		rclone copy ~/RetroPie/saves/${system} retropie:${remotebasedir}/${system} --include "${filter}.*" --update >> ${logfile}
@@ -216,7 +216,7 @@ function uploadSaves ()
 			log "INFO" "Done"
 			showNotification "Uploading saves and states to ${remoteType}... Done" "green"
 		else
-			log "ERROR" "Saves could not be uploaded"
+			log "ERROR" "saves and states could not be uploaded"
 			showNotification "Uploading saves and states to ${remoteType}... ERROR" "red" "" "" "" "forced"
 		fi
 	fi

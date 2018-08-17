@@ -38,8 +38,8 @@ dialog \
 	--no-collapse \
 	--cr-wrap \
 	--yesno \
-		"\nThis script will configure RetroPie so that your savefiles and statefiles will be ${YELLOW}synchronized with a remote destination${NORMAL}. Several packages and scripts will be installed, see\n\n	https://github.com/Jandalf81/rclone_script/blob/master/ReadMe.md\n\nfor a rundown. In short, any time you ${GREEN}start${NORMAL} or ${RED}stop${NORMAL} a ROM the savefiles and savestates for that ROM will be ${GREEN}down-${NORMAL} and ${RED}uploaded${NORMAL} ${GREEN}from${NORMAL} and ${RED}to${NORMAL} a remote destination. To do so, RetroPie will be configured to put all savefiles and statefiles in distinct directories, seperated from the ROMS directories. The installer will guide you through the necessary steps. If you wish to see what exactly is done at each step, open a second console and execute\n	${YELLOW}tail -f ~/scripts/rclone_script/rclone_script-install.log${NORMAL}\n\nIf you already have some savefiles in the ROMS directory, you will need to ${YELLOW}move them manually${NORMAL} after installation.\n\nAre you sure you wish to continue?" \
-	25 90 2>&1 > /dev/tty \
+		"\nThis script will configure RetroPie so that your savefiles and statefiles will be ${YELLOW}synchronized with a remote destination${NORMAL}. Several packages and scripts will be installed, see\n\n	https://github.com/Jandalf81/rclone_script/blob/master/ReadMe.md\n\nfor a rundown. In short, any time you ${GREEN}start${NORMAL} or ${RED}stop${NORMAL} a ROM the savefiles and savestates for that ROM will be ${GREEN}down-${NORMAL} and ${RED}uploaded${NORMAL} ${GREEN}from${NORMAL} and ${RED}to${NORMAL} a remote destination. To do so, RetroPie will be configured to put all savefiles and statefiles in distinct directories, seperated from the ROMS directories. The installer will guide you through the necessary steps. If you wish to see what exactly is done at each step, open a second console and execute\n	${YELLOW}tail -f ~/scripts/rclone_script/rclone_script-install.log${NORMAL}\n\nIf you already have some savefiles in the ROMS directory, you will need to ${YELLOW}move them manually${NORMAL} after installation. You can use the new network share\n	${YELLOW}\\\\$(hostname)\\saves${NORMAL}\nfor this.\n\nAre you sure you wish to continue?" \
+	26 90 2>&1 > /dev/tty \
     || exit
 
 	
@@ -876,8 +876,19 @@ function 6aCheckLocalBaseDirectory ()
 		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tNOT FOUND\n" >> "${logfile}"
 		
 		mkdir ~/RetroPie/saves
+		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tCREATED directory\n" >> "${logfile}"
 		
-		printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tCREATED\n" >> "${logfile}"
+		# share that new directory on the network
+		if [[ $(grep -c "\[saves\]" /etc/samba/smb.conf) -eq 0 ]]
+		then
+			# add new share to SAMBA
+			printf "[saves]\ncomment = saves\npath = \"/home/pi/RetroPie/saves\"\nwritable = yes\nguest ok = yes\ncreate mask = 0644\ndirectory mask = 0755\nforce user = pi\n" | sudo tee --append /etc/samba/smb.conf | cat > /dev/null
+			
+			# restart SAMBA
+			sudo service smbd restart
+			
+			printf "$(date +%FT%T%:z):\t6aCheckLocalBaseDirectory\tCREATED network share\n" >> "${logfile}"
+		fi
 		
 		return 1
 	fi

@@ -446,12 +446,6 @@ function 6LocalSAVEFILEDirectory ()
 	printf "$(date +%FT%T%:z):\t6a moveFilesToDefault\tSTART\n" >> "${logfile}"
 	updateStep "6a" "in progress" 64
 	
-#counter=1
-#while [ $counter -le 10000 ]
-#do
-#	echo "." > ~/RetroPie/saves/gba/datei_${counter}.srm
-#	((counter++))
-#done
 	if [ -d ~/RetroPie/saves ]
 	then
 		# start copy task in background, pipe numbered output into COPY.TXT and to LOGFILE
@@ -470,9 +464,6 @@ function 6LocalSAVEFILEDirectory ()
 		
 		rm copy.txt
 		
-	#rm ~/RetroPie/saves/gba/datei*
-	#rm ~/RetroPie/roms/gba/datei*
-
 		updateStep "6a" "done" 72
 	else
 		printf "$(date +%FT%T%:z):\t6a moveFilesToDefault\tNOT FOUND\n" >> "${logfile}"
@@ -500,6 +491,24 @@ function 6LocalSAVEFILEDirectory ()
 		wait
 		
 		rm delete.txt
+		
+		# check if that directory is shared
+		local retval=$(grep -n "\[saves\]" /etc/samba/smb.conf)
+		if [ "${retval}" != "" ]
+		then
+			# extract line numbers
+			local lnStart="${retval%%:*}"
+			local lnEnd=$(( $lnStart + 7 ))
+			
+			# remove network share
+			sudo sed -i -e "${lnStart},${lnEnd}d" /etc/samba/smb.conf
+			
+			# restart SAMBA service
+			sudo service smbd restart
+			
+			printf "$(date +%FT%T%:z):\t6b removeLocalSAVEFILEbasedir\tREMOVED network share\n" >> "${logfile}"
+		fi	
+
 		
 		printf "$(date +%FT%T%:z):\t6b removeLocalSAVEFILEbasedir\tDONE\n" >> "${logfile}"
 		updateStep "6b" "done" 80
