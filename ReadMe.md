@@ -16,12 +16,13 @@ chmod 755 ~/scripts/rclone_script/rclone_script-install.sh;
 ```
 and follow the instructions.
 
-I recommend reading this page completely before actually doing this! You can also look at these Wiki pages to better understand what this script does:
+I ***strongly*** recommend reading this page completely before actually doing this! You can also look at these Wiki pages to better understand what this script does:
 
-* [RCLONE_SCRIPT-install](../../wiki/RCLONE_SCRIPT-install)
+* [Step-by-step guide through the installer](../../wiki/RCLONE_SCRIPT-install)
 * [RCLONE_SCRIPT in action](../../wiki/RCLONE_SCRIPT%20in%20action)
-* [RCLONE_SCRIPT-menu](../../wiki/RCLONE_SCRIPT-menu)
-* You'll have to [manually move your savefiles](../../wiki/move-Savefiles)!
+* [Guide to the RCLONE_SCRIPT menu](../../wiki/RCLONE_SCRIPT-menu)
+* [How to manually move your savefiles](../../wiki/move-Savefiles)
+* This also allows you to sync your progress with RetroArch on [Android](../../wiki/sync-and-play-Android) and [Windows](sync-and-play-Windows)!
 
 ## Again, what does this do?
 
@@ -51,8 +52,8 @@ Of course, all of this only works if your RetroPie has access to the configured 
 In the RetroPie menu, there will also be a new menu item "_RCLONE_SCRIPT menu_". Starting this menu item will let you...
 
 * start a full sync to up- and download newer files to and from the remote, so each side should have the latest save file for each game afterwards. Please note that this will also download save files even if the accompanying ROM is not on your RetroPie.
-* toggle a setting to enable or disable the synchronization when starting or stopping a ROM. With this, you can temporarily disable that process. You' get a warning, though
-* toggle a setting to enable or disable showing a notification for the synchronization process. Also disables the warnings, so please let this be enabled
+* toggle a setting to enable or disable the synchronization when starting or stopping a ROM. With this, you can temporarily disable that process. You'll get a warning, though
+* toggle a setting to enable or disable showing a notification for the synchronization process
 
 ## Why do this?
 
