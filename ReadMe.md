@@ -22,7 +22,7 @@ I ***strongly*** recommend reading this page completely before actually doing th
 * [RCLONE_SCRIPT in action](../../wiki/RCLONE_SCRIPT%20in%20action)
 * [Guide to the RCLONE_SCRIPT menu](../../wiki/RCLONE_SCRIPT-menu)
 * [How to manually move your savefiles](../../wiki/move-Savefiles)
-* This also allows you to sync your progress with RetroArch on [Android](../../wiki/sync-and-play-Android) and [Windows](../../sync-and-play-Windows)!
+* This also allows you to sync your progress with RetroArch on [Android](../../wiki/sync-and-play-Android) and [Windows](../../wiki/sync-and-play-Windows)!
 
 ## Again, what does this do?
 
