@@ -60,6 +60,11 @@ function getStatusOfParameters ()
 	else
 		statusShowNotifications="${RED}DISABLED${NORMAL}"
 	fi
+	
+	case ${neededConnection} in
+		0) statusNeededConnection="Internet access" ;;
+		1) statusNeededConnection="LAN / WLAN" ;;
+	esac
 }
 
 function saveConfig ()
@@ -68,6 +73,7 @@ function saveConfig ()
 	echo "showNotifications=${showNotifications}" >> ${config}
 	echo "syncOnStartStop=${syncOnStartStop}" >> ${config}
 	echo "logfile=~/scripts/rclone_script/rclone_script.log" >> ${config}
+	echo "neededConnection=${neededConnection}" >> ${config}
 	echo "debug=0" >> ${config}
 }
 
@@ -95,6 +101,7 @@ function main_menu ()
 				1 "Full synchronization of all savefiles and statefiles" \
 				2 "Toggle \"Synchronize saves on start / stop\" (currently ${statusSyncOnStartStop})" \
 				3 "Toggle \"Show notifications on sync\" (currently ${statusShowNotifications})" \
+				4 "Set needed Connection (currently \"${statusNeededConnection}\")" \
 				"" ""\
 				9 "uninstall RCLONE_SCRIPT"
 			)
@@ -103,6 +110,7 @@ function main_menu ()
 			1) doFullSync  ;;
 			2) toggleSyncOnStartStop  ;;
 			3) toggleShowNotifications  ;;
+			4) setNeededConnection ;;
 			9) ~/scripts/rclone_script/rclone_script-uninstall.sh  ;;
 			*) break  ;;
 		esac
@@ -167,6 +175,31 @@ function toggleShowNotifications ()
 	else
 		showNotifications="TRUE"
 	fi
+	
+	saveConfig
+}
+
+function setNeededConnection ()
+{
+	choice=$(dialog \
+		--stdout \
+		--colors \
+		--no-collapse \
+		--cr-wrap \
+		--backtitle "${backtitle}" \
+		--title "Needed connection" \
+		--default-item "${neededConnection}" \
+		--ok-label "Select" \
+		--menu "\nPlease select which type of connection will be needed for your configured remote" 20 50 5 \
+			0 "Internet access" \
+			1 "LAN / WLAN connection only"
+		)
+	
+	case ${choice} in 
+		0) neededConnection=0 ;;
+		1) neededConnection=1 ;;
+		*) return ;;
+	esac
 	
 	saveConfig
 }

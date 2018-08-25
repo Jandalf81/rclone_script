@@ -138,6 +138,42 @@ function getTypeOfRemote ()
 	remoteType=$(echo ${remoteType} | xargs)
 }
 
+function getAvailableConnection ()
+# checks if the device is connected to a LAN / WLAN and the Internet
+# RETURN
+#	0 > device seems to be connected to the Internet
+#	1 > device seems to be connected to a LAN / WLAN without internet access
+#	2 > device doesn't seem to be connected at all
+{
+	gatewayIP=$(ip r | grep default | cut -d " " -f 3)	
+	if [ "${gatewayIP}" == "" ]
+	then 
+		log "INFO"  "Gateway could not be detected\n"
+		return 2
+	else
+		log "INFO" "Gateway IP: ${gatewayIP}\n"
+	fi
+	
+	ping -q -w 1 -c 1 ${gatewayIP} > /dev/null
+	if [[ $? -eq 0 ]]
+	then
+		log "INFO"  "Gateway PING successful\n"
+	else
+		log "INFO"  "Gateway could not be PINGed\n"
+		return 2
+	fi
+	
+	ping -q -w 1 -c 1 "www.google.com" > /dev/null
+	if [[ $? -eq 0 ]]
+	then
+		log "INFO"  "www.google.com PING successful\n"
+		return 0
+	else
+		log "INFO" "www.google.com could not be PINGed\n"
+		return 1
+	fi
+}
+
 
 ##################
 # SYNC FUNCTIONS #
@@ -154,6 +190,20 @@ function downloadSaves ()
 	log "INFO" "Started ${system}/${romfilename} "
 	log "INFO" "Downloading saves and states for ${system}/${romfilename} from ${remoteType}..."
 	showNotification "Downloading saves and states from ${remoteType}..."
+	
+	getAvailableConnection
+	availableConnection=$?
+	if [[ ${availableConnection} -gt ${neededConnection} ]]
+	then 
+		log "ERROR" "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
+		
+		case ${neededConnection} in
+			0) showNotification "Downloading saves and states from ${remoteType}... No Internet connection available" "red" "" "" "" "forced" ;;
+			1) showNotification "Downloading saves and states from ${remoteType}... No LAN / WLAN connection available" "red" "" "" "" "forced" ;;
+		esac
+		
+		return
+	fi
 	
 	# test for remote files
 	remotefiles=$(rclone lsf retropie:${remotebasedir}/${system} --include "${filter}.*")
@@ -199,6 +249,20 @@ function uploadSaves ()
 	log "INFO" "Stopped ${system}/${romfilename} "
 	log "INFO" "Uploading saves and states for ${system}/${romfilename} to ${remoteType}..."
 	showNotification "Uploading saves and states to ${remoteType}..."
+	
+	getAvailableConnection
+	availableConnection=$?
+	if [[ ${availableConnection} -gt ${neededConnection} ]]
+	then 
+		log "ERROR" "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
+		
+		case ${neededConnection} in
+			0) showNotification "Uploading saves and states to ${remoteType}... No Internet connection available" "red" "" "" "" "forced" ;;
+			1) showNotification "Uploading saves and states to ${remoteType}... No LAN / WLAN connection available" "red" "" "" "" "forced" ;;
+		esac
+		
+		return
+	fi
 
 	localfiles=$(find ~/RetroPie/saves/${system} -type f -iname "${filter}.*")
 	

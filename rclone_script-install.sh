@@ -732,6 +732,22 @@ function 4cConfigureRCLONE_SCRIPT ()
 		*) shownotifications="FALSE"  ;;
 	esac
 	
+	choice=$(dialog \
+		--stdout \
+		--colors \
+		--no-collapse \
+		--cr-wrap \
+		--backtitle "${backtitle}" \
+		--title "Needed connection" \
+		--ok-label "Select" \
+		--no-cancel \
+		--menu "\nPlease select which type of connection will be needed for your configured remote" 20 50 5 \
+			0 "Internet access" \
+			1 "LAN / WLAN connection only"
+		)
+	
+	neededConnection=${choice}
+	
 	printf "$(date +%FT%T%:z):\t4cConfigureRCLONE_SCRIPT\tDONE\n" >> "${logfile}"
 }
 
@@ -779,7 +795,7 @@ function 5aRUNCOMMAND-ONSTART ()
 			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL NOT FOUND\n" >> "${logfile}"
 			
 			# add call
-			echo "~/scripts/rclone_script/rclone_script.sh \"down\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onstart.sh	
+			printf "\n~/scripts/rclone_script/rclone_script.sh \"down\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"\n" >> /opt/retropie/configs/all/runcommand-onstart.sh	
 
 			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tCALL CREATED\n" >> "${logfile}"
 			
@@ -788,8 +804,7 @@ function 5aRUNCOMMAND-ONSTART ()
 	else
 		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE NOT FOUND\n" >> "${logfile}"
 	
-		echo "#!/bin/bash" > /opt/retropie/configs/all/runcommand-onstart.sh
-		echo "~/scripts/rclone_script/rclone_script.sh \"down\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onstart.sh
+		printf "#!/bin/bash\n~/scripts/rclone_script/rclone_script.sh \"down\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"\n" > /opt/retropie/configs/all/runcommand-onstart.sh
 		
 		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONSTART\tFILE CREATED\n" >> "${logfile}"
 		
@@ -820,7 +835,7 @@ function 5aRUNCOMMAND-ONEND ()
 			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL NOT FOUND\n" >> "${logfile}"
 			
 			# add call
-			echo "~/scripts/rclone_script/rclone_script.sh \"up\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onend.sh	
+			printf "\n~/scripts/rclone_script/rclone_script.sh \"up\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"\n" >> /opt/retropie/configs/all/runcommand-onend.sh	
 
 			printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tCALL CREATED\n" >> "${logfile}"
 			
@@ -829,8 +844,7 @@ function 5aRUNCOMMAND-ONEND ()
 	else
 		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE NOT FOUND\n" >> "${logfile}"
 	
-		echo "#!/bin/bash" > /opt/retropie/configs/all/runcommand-onend.sh
-		echo "~/scripts/rclone_script/rclone_script.sh \"up\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"" >> /opt/retropie/configs/all/runcommand-onend.sh
+		printf "#!/bin/bash\n~/scripts/rclone_script/rclone_script.sh \"up\" \"\$1\" \"\$2\" \"\$3\" \"\$4\"\n" >> /opt/retropie/configs/all/runcommand-onend.sh
 		
 		printf "$(date +%FT%T%:z):\t5aRUNCOMMAND-ONEND\tFILE CREATED\n" >> "${logfile}"
 		
@@ -1140,6 +1154,7 @@ function 9aSaveConfiguration ()
 	echo "showNotifications=${shownotifications}" >> ~/scripts/rclone_script/rclone_script.ini
 	echo "syncOnStartStop=\"TRUE\"" >> ~/scripts/rclone_script/rclone_script.ini
 	echo "logfile=~/scripts/rclone_script/rclone_script.log" >> ~/scripts/rclone_script/rclone_script.ini
+	echo "neededConnection=${neededConnection}" >> ~/scripts/rclone_script/rclone_script.ini
 	echo "debug=0" >> ~/scripts/rclone_script/rclone_script.ini
 	
 	printf "$(date +%FT%T%:z):\t9aSaveConfiguration\tDONE\n" >> "${logfile}"
