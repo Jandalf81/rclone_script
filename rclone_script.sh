@@ -148,28 +148,28 @@ function getAvailableConnection ()
 	gatewayIP=$(ip r | grep default | cut -d " " -f 3)	
 	if [ "${gatewayIP}" == "" ]
 	then 
-		log "INFO"  "Gateway could not be detected\n"
+		log "INFO"  "Gateway could not be detected"
 		return 2
 	else
-		log "INFO" "Gateway IP: ${gatewayIP}\n"
+		log "INFO" "Gateway IP: ${gatewayIP}"
 	fi
 	
 	ping -q -w 1 -c 1 ${gatewayIP} > /dev/null
 	if [[ $? -eq 0 ]]
 	then
-		log "INFO"  "Gateway PING successful\n"
+		log "INFO"  "Gateway PING successful"
 	else
-		log "INFO"  "Gateway could not be PINGed\n"
+		log "INFO"  "Gateway could not be PINGed"
 		return 2
 	fi
 	
 	ping -q -w 1 -c 1 "www.google.com" > /dev/null
 	if [[ $? -eq 0 ]]
 	then
-		log "INFO"  "www.google.com PING successful\n"
+		log "INFO"  "www.google.com PING successful"
 		return 0
 	else
-		log "INFO" "www.google.com could not be PINGed\n"
+		log "INFO" "www.google.com could not be PINGed"
 		return 1
 	fi
 }
