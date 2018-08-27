@@ -287,6 +287,34 @@ function uploadSaves ()
 }
 
 
+function deleteFileFromRemote ()
+# deletes a file from the remote
+# INPUT
+#	$1 > relative filepath incl. name and extension to the local savepath
+# RETURN
+#	0 > file deteted successfully
+#	1 > connection not available
+#	2 > file could not be deleted
+{
+	fileToDelete="$1"
+	
+	getAvailableConnection
+	availableConnection=$?
+	if [[ ${availableConnection} -gt ${neededConnection} ]]
+	then 
+		log "ERROR" "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
+		return 1
+	fi
+	
+	rclone delete retropie:${remotebasedir}/${fileToDelete} 2>&1 >> ${logfile}
+	if [[ $? -eq 0 ]]
+	then
+		return 0
+	else
+		return 1
+	fi
+}
+
 ########
 # MAIN #
 ########
@@ -307,4 +335,9 @@ then
 	prepareFilter
 	getTypeOfRemote
 	downloadSaves
+fi
+
+if [ "${direction}" == "delete" ]
+then
+	deleteFileFromRemote "${2}"
 fi
