@@ -12,6 +12,7 @@ UNDERLINE=$(tput smul)
 # include settings file
 config=~/scripts/rclone_script/rclone_script.ini
 source ${config}
+logLevel=2
 
 
 # parameters
@@ -27,24 +28,36 @@ command="$5"
 ####################
 
 function log ()
+# Prints messages of different severeties to a logfile
+# Each message will look something like this:
+# <TIMESTAMP>	<SEVERITY>	<CALLING_FUNCTION>	<MESSAGE>
+# needs a set variable $logLevel
+#	-1 > No logging at all
+#	0 > prints ERRORS only
+#	1 > prints ERRORS and WARNINGS
+#	2 > prints ERRORS, WARNINGS and INFO
+#	3 > prints ERRORS, WARNINGS, INFO and DEBUGGING
+# needs a set variable $log pointing to a file
+# Usage
+# log 0 "This is an ERROR Message"
+# log 1 "This is a WARNING"
+# log 2 "This is just an INFO"
+# log 3 "This is a DEBUG message"
 {
 	severity=$1
 	message=$2
-	printf "$(date +%FT%T%:z):\t${severity}:\t${message}\n" >> ${logfile}
-}
-
-function debug ()
-{
-	log "DEBUG" "direction: ${direction}"
-	log "DEBUG" "system: ${system}"
-	log "DEBUG" "emulator: ${emulator}"
-	log "DEBUG" "rom: ${rom}"
-	log "DEBUG" "command: ${command}"
-	log "DEBUG" "remotebasedir: ${remotebasedir}"
-	log "DEBUG" "rompath: ${rompath}"
-	log "DEBUG" "romfilename: ${romfilename}"
-	log "DEBUG" "romfilebase: ${romfilebase}"
-	log "DEBUG" "romfileext: ${romfileext}"
+	
+	if (( ${severity} <= ${logLevel} ))
+	then
+		case ${severity} in
+			0) level="ERROR"  ;;
+			1) level="WARNING"  ;;
+			2) level="INFO"  ;;
+			3) level="DEBUG"  ;;
+		esac
+		
+		printf "$(date +%FT%T%:z):\t${level}\t${0##*/}\t${FUNCNAME[1]}\t${message}\n" >> ${logfile} 
+	fi
 }
 
 function killOtherNotification ()
@@ -52,11 +65,11 @@ function killOtherNotification ()
 	# get PID of other PNGVIEW process
 	otherPID=$(pgrep --full pngview)
 	
-	if [ "${debug}" = "1" ]; then log "DEBUG" "Other PIDs: ${otherPID}"; fi
+	if [ "${debug}" = "1" ]; then log 3 "Other PIDs: ${otherPID}"; fi
 
 	if [ "${otherPID}" != "" ]
 	then
-		if [ "${debug}" = "1" ]; then log "DEBUG" "Kill other PNGVIEW ${otherPID}"; fi
+		if [ "${debug}" = "1" ]; then log 3 "Kill other PNGVIEW ${otherPID}"; fi
 		
 		kill ${otherPID}
 	fi
@@ -131,7 +144,7 @@ function getTypeOfRemote ()
 	# list all remotes and their type
 	remotes=$(rclone listremotes -l)
 	
-	# get line wiht RETROPIE remote
+	# get line with RETROPIE remote
 	retval=$(grep -i "^retropie:" <<< ${remotes})
 
 	remoteType="${retval#*:}"
@@ -148,28 +161,28 @@ function getAvailableConnection ()
 	gatewayIP=$(ip r | grep default | cut -d " " -f 3)	
 	if [ "${gatewayIP}" == "" ]
 	then 
-		log "INFO"  "Gateway could not be detected"
+		log 2 "Gateway could not be detected"
 		return 2
 	else
-		log "INFO" "Gateway IP: ${gatewayIP}"
+		log 2 "Gateway IP: ${gatewayIP}"
 	fi
 	
 	ping -q -w 1 -c 1 ${gatewayIP} > /dev/null
 	if [[ $? -eq 0 ]]
 	then
-		log "INFO"  "Gateway PING successful"
+		log 2  "Gateway PING successful"
 	else
-		log "INFO"  "Gateway could not be PINGed"
+		log 2  "Gateway could not be PINGed"
 		return 2
 	fi
 	
 	ping -q -w 1 -c 1 "www.google.com" > /dev/null
 	if [[ $? -eq 0 ]]
 	then
-		log "INFO"  "www.google.com PING successful"
+		log 2  "www.google.com PING successful"
 		return 0
 	else
-		log "INFO" "www.google.com could not be PINGed"
+		log 2 "www.google.com could not be PINGed"
 		return 1
 	fi
 }
@@ -187,15 +200,15 @@ function downloadSaves ()
 		return
 	fi
 
-	log "INFO" "Started ${system}/${romfilename} "
-	log "INFO" "Downloading saves and states for ${system}/${romfilename} from ${remoteType}..."
+	log 2 "Started ${system}/${romfilename} "
+	log 2 "Downloading saves and states for ${system}/${romfilename} from ${remoteType}..."
 	showNotification "Downloading saves and states from ${remoteType}..."
 	
 	getAvailableConnection
 	availableConnection=$?
 	if [[ ${availableConnection} -gt ${neededConnection} ]]
 	then 
-		log "ERROR" "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
+		log 0 "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
 		
 		case ${neededConnection} in
 			0) showNotification "Downloading saves and states from ${remoteType}... No Internet connection available" "red" "" "" "" "forced" ;;
@@ -214,10 +227,10 @@ function downloadSaves ()
 		
 		if [ "${remotefiles}" = "" ]
 		then # no remote files found
-			log "INFO" "No remote files found"
+			log 2 "No remote files found"
 			showNotification "Downloading saves and states from ${remoteType}... No remote files found"
 		else # remote files found
-			log "INFO" "Found remote files"
+			log 2 "Found remote files"
 			
 			# download saves and states to corresponding ROM
 			rclone copy retropie:${remotebasedir}/${system} ~/RetroPie/saves/${system} --include "${filter}.*" --update >> ${logfile}
@@ -225,15 +238,15 @@ function downloadSaves ()
 			
 			if [ "${retval}" = "0" ]
 			then
-				log "INFO" "Done"
+				log 2 "Done"
 				showNotification "Downloading saves and states from ${remoteType}... Done" "green"
 			else
-				log "ERROR" "Saves and states could not be downloaded"
+				log 2 "Saves and states could not be downloaded"
 				showNotification "Downloading saves and states from ${remoteType}... ERROR" "red" "" "" "" "forced"
 			fi
 		fi
 	else # error with RCLONE
-		log "ERROR" "Saves and states could not be downloaded"
+		log 0 "Saves and states could not be downloaded"
 		showNotification "Downloading saves and states from ${remoteType}... ERROR" "red" "" "" "" "forced"
 	fi
 }
@@ -246,15 +259,15 @@ function uploadSaves ()
 		return
 	fi
 
-	log "INFO" "Stopped ${system}/${romfilename} "
-	log "INFO" "Uploading saves and states for ${system}/${romfilename} to ${remoteType}..."
+	log 2 "Stopped ${system}/${romfilename} "
+	log 2 "Uploading saves and states for ${system}/${romfilename} to ${remoteType}..."
 	showNotification "Uploading saves and states to ${remoteType}..."
 	
 	getAvailableConnection
 	availableConnection=$?
 	if [[ ${availableConnection} -gt ${neededConnection} ]]
 	then 
-		log "ERROR" "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
+		log 0 "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
 		
 		case ${neededConnection} in
 			0) showNotification "Uploading saves and states to ${remoteType}... No Internet connection available" "red" "" "" "" "forced" ;;
@@ -268,7 +281,7 @@ function uploadSaves ()
 	
 	if [ "${localfiles}" = "" ]
 	then # no local files found
-		log "INFO" "No local saves and states found"
+		log 2 "No local saves and states found"
 		showNotification "Uploading saves and states to ${remoteType}... No local files found"
 	else # local files found
 		# upload saves and states to corresponding ROM
@@ -277,10 +290,10 @@ function uploadSaves ()
 		
 		if [ "${retval}" = "0" ]
 		then
-			log "INFO" "Done"
+			log 2 "Done"
 			showNotification "Uploading saves and states to ${remoteType}... Done" "green"
 		else
-			log "ERROR" "saves and states could not be uploaded"
+			log 2 "saves and states could not be uploaded"
 			showNotification "Uploading saves and states to ${remoteType}... ERROR" "red" "" "" "" "forced"
 		fi
 	fi
@@ -297,20 +310,23 @@ function deleteFileFromRemote ()
 #	2 > file could not be deleted
 {
 	fileToDelete="$1"
+	log 2 "File to delete: retropie:${remotebasedir}/${fileToDelete}"
 	
 	getAvailableConnection
 	availableConnection=$?
 	if [[ ${availableConnection} -gt ${neededConnection} ]]
 	then 
-		log "ERROR" "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
+		log 0 "Needed Connection not available. Needed ${neededConnection}, available ${availableConnection}"
 		return 1
 	fi
 	
-	rclone delete retropie:${remotebasedir}/${fileToDelete} 2>&1 >> ${logfile}
+	rclone delete "retropie:${remotebasedir}/${fileToDelete}" 2>&1 >> ${logfile}
 	if [[ $? -eq 0 ]]
 	then
+		log 2 "File deleted successfully"
 		return 0
 	else
+		log 0 "File could not be deleted. Error Code $?"
 		return 1
 	fi
 }
@@ -319,7 +335,17 @@ function deleteFileFromRemote ()
 # MAIN #
 ########
 
-if [ "${debug}" = "1" ]; then debug; fi
+#if [ "${debug}" = "1" ]; then debug; fi
+log 3 "direction: ${direction}"
+log 3 "system: ${system}"
+log 3 "emulator: ${emulator}"
+log 3 "rom: ${rom}"
+log 3 "command: ${command}"
+log 3 "remotebasedir: ${remotebasedir}"
+log 3 "rompath: ${rompath}"
+log 3 "romfilename: ${romfilename}"
+log 3 "romfilebase: ${romfilebase}"
+log 3 "romfileext: ${romfileext}"
 
 if [ "${direction}" == "up" ] && [ "${system}" != "kodi" ]
 then
