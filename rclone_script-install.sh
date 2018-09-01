@@ -712,6 +712,7 @@ function 4cConfigureRCLONE_SCRIPT ()
 		--colors \
 		--no-collapse \
 		--cr-wrap \
+		--no-cancel \
 		--backtitle "${backtitle}" \
 		--title "Remote base directory" \
 		--inputbox "\nPlease name the directory which will be used as your ${YELLOW}remote base directory${NORMAL}. If necessary, this directory will be created.\n\nExamples:\n* RetroArch\n* mySaves/RetroArch\n\n" 18 40 "RetroArch" 
@@ -984,28 +985,32 @@ function 7aCheckRemoteBaseDirectory ()
 {
 	printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tSTART\n" >> "${logfile}"
 	
-	# list all directories from remote
-	remoteDirs=$(rclone lsf --dirs-only -R retropie:)
-	
-	# for each line...
-	while read path
-	do
-		if [ "${path}" == "${remotebasedir}/" ]
-		then
-			printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tFOUND\n" >> "${logfile}"
-			
-			return 0
-		fi
-	done <<< "${remoteDirs}"
-	
-	# if there has been no match...
-	printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tNOT FOUND\n" >> "${logfile}"
-	
-	rclone mkdir retropie:"${remotebasedir}" >> "${logfile}"
-	
+	# try to read remote base dir
+	rclone lsf "retropie:${remotebasedir}/" > /dev/null 2>&1
 	case $? in
-		0) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tCREATED\n" >> "${logfile}"; return 1  ;;
-		*) printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tERROR\n" >> "${logfile}"; return 255  ;;
+		0)
+			printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tFOUND\n" >> "${logfile}"
+			return 0
+			;;
+		3)
+			printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tNOT FOUND\n" >> "${logfile}"
+	
+			rclone mkdir "retropie:${remotebasedir}" >> "${logfile}"
+			case $? in
+				0) 
+					printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tCREATED\n" >> "${logfile}"
+					return 1 
+					;;
+				*) 
+					printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tERROR\n" >> "${logfile}"
+					return 255
+					;;
+			esac
+			;;
+		*)
+			printf "$(date +%FT%T%:z):\t7aCheckRemoteBaseDirectory\tERROR\n" >> "${logfile}"
+			return 255
+			;;
 	esac
 }
 
@@ -1022,7 +1027,7 @@ function 7bCheckRemoteSystemDirectories ()
 	local output
 	
 	# list all directories in $REMOTEBASEDIR from remote
-	remoteDirs=$(rclone lsf --dirs-only -R retropie:"${remotebasedir}")
+	remoteDirs=$(rclone lsf --dirs-only "retropie:${remotebasedir}/")
 	
 	# for each directory in ROMS directory...
 	for directory in ~/RetroPie/roms/*
