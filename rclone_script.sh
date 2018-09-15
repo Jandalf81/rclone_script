@@ -176,13 +176,13 @@ function getAvailableConnection ()
 		return 2
 	fi
 	
-	ping -q -w 1 -c 1 "www.google.com" > /dev/null
+	ping -q -w 1 -c 1 "8.8.8.8" > /dev/null
 	if [[ $? -eq 0 ]]
 	then
-		log 2  "www.google.com PING successful"
+		log 2  "8.8.8.8 PING successful"
 		return 0
 	else
-		log 2 "www.google.com could not be PINGed"
+		log 2 "8.8.8.8 could not be PINGed"
 		return 1
 	fi
 }
