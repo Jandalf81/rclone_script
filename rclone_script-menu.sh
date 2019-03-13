@@ -36,7 +36,7 @@ function log ()
 function getTypeOfRemote ()
 {
 	# list all remotes and their type
-	remotes=$(rclone listremotes -l)
+	remotes=$(rclone listremotes --long)
 	
 	# get line wiht RETROPIE remote
 	retval=$(grep -i "^retropie:" <<< ${remotes})

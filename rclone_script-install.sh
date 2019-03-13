@@ -107,7 +107,7 @@ function dialogShowProgress ()
 function dialogShowSummary ()
 {
 	# list all remotes and their type
-	remotes=$(rclone listremotes -l)
+	remotes=$(rclone listremotes --long)
 	
 	# get line with RETROPIE remote
 	retval=$(grep -i "^retropie:" <<< ${remotes})
