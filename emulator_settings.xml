@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<emulators>
+    <emulator>
+        <name>ppsspp</name>
+        <saveFilePath>/opt/retropie/configs/psp/PSP/SAVEDATA</saveFilePath>
+        <saveStatePath>/opt/retropie/configs/psp/PSP/PPSSPP_STATE</saveStatePath>
+        <saveFileExtensions>
+            <ext>SYS</ext>
+            <ext>PNG</ext>
+            <ext>SFO</ext>
+        </saveFileExtensions>
+    </emulator>
+</emulators>

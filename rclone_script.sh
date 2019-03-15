@@ -14,6 +14,9 @@ config=~/scripts/rclone_script/rclone_script.ini
 source ${config}
 logLevel=2
 
+# include emulator specific settings
+emu_settings=~/scripts/rclone_script/emulator_settings.xml
+
 
 # parameters
 direction="$1"
@@ -137,6 +140,41 @@ function prepareFilter ()
 {
 	filter="${romfilebase//\[/\\[}"
 	filter="${filter//\]/\\]}"
+}
+
+# Builds a filter compatible with Find
+function prepareLocalFilter ()
+{
+	# Create an array of save file extensions
+	read -a exts <<< $(xmlstarlet sel -t -m "emulators/emulator[name='${emulator}']/saveFileExtensions" -v . "${emu_settings}")
+
+	# If any custom save file extensions are defined
+	if [ ${#exts[@]} -gt 0 ]
+	then
+		# Build the filter for the extensions
+		log 3 "Custom save extentions defined for emulator: ${emulator}"
+		localFilter="\( -iname '*.${exts[0]}'"
+		for ext in ${exts[@]:1}; do
+			localFilter="${localFilter} -o -iname '*.${ext}'"
+		done
+		localFilter="${localFilter} \)"
+	else
+		# Otherwise, default to "<ROM_name>.*"
+		localFilter="${romfilebase//\[/\\[}"
+		localFilter="${localFilter//\]/\\]}"
+	fi
+
+	log 3 "Local save file filter: ${localFilter}"
+}
+
+function prepareRemoteFilter ()
+{
+
+}
+
+function getSavePathForEmulator ()
+{
+
 }
 
 function getTypeOfRemote ()
@@ -350,6 +388,7 @@ log 3 "romfileext: ${romfileext}"
 if [ "${direction}" == "up" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
+	prepareLocalFilter
 	prepareFilter
 	getTypeOfRemote
 	uploadSaves
