@@ -143,38 +143,54 @@ function prepareFilter ()
 }
 
 # Builds a filter compatible with Find
-function prepareLocalFilter ()
+function prepareSaveFilters ()
 {
-	# Create an array of save file extensions
-	read -a exts <<< $(xmlstarlet sel -t -m "emulators/emulator[name='${emulator}']/saveFileExtensions" -v . "${emu_settings}")
-
-	# If any custom save file extensions are defined
-	if [ ${#exts[@]} -gt 0 ]
+	log 3 "emu_settings: ${emu_settings}"
+	
+	# Read in any extensions
+	extensions=$(xmlstarlet sel -t -m "emulators/emulator[name='${emulator}']/saveFileExtensions" -v "ext" "${emu_settings}")
+	
+	# If no extensions were defined
+	if [ -z "${extensions// }" ]
 	then
-		# Build the filter for the extensions
-		log 3 "Custom save extentions defined for emulator: ${emulator}"
-		localFilter="\( -iname '*.${exts[0]}'"
-		for ext in ${exts[@]:1}; do
-			localFilter="${localFilter} -o -iname '*.${ext}'"
-		done
-		localFilter="${localFilter} \)"
-	else
-		# Otherwise, default to "<ROM_name>.*"
+
+		# Default to "<ROM_name>.*"
 		localFilter="${romfilebase//\[/\\[}"
 		localFilter="${localFilter//\]/\\]}"
+		remoteFilter="${localFilter}"
+
+	else
+
+		# Otherwise, build custom filters
+		log 3 "Custom save extentions defined for emulator: ${emulator}"
+		i=0
+
+		# Build the filters for the extensions
+		while read ext; do
+
+			if [ "${i}" -eq "0" ]
+			then
+
+				remoteFilter="{*.${ext}"
+				localFilter="\( -iname '*.${ext}'"
+				((i++))
+			
+			else
+				
+				localFilter="${localFilter} -o -iname '*.${ext}'"
+				remoteFilter="${remoteFilter}, *.${ext}"
+			
+			fi
+
+		done <<< ${extensions}
+
+		localFilter="${localFilter} \)"
+		remoteFilter="${remoteFilter}}"
+
 	fi
 
 	log 3 "Local save file filter: ${localFilter}"
-}
-
-function prepareRemoteFilter ()
-{
-
-}
-
-function getSavePathForEmulator ()
-{
-
+	log 3 "Remote save file filter: ${remoteFilter}"
 }
 
 function getTypeOfRemote ()
@@ -388,7 +404,7 @@ log 3 "romfileext: ${romfileext}"
 if [ "${direction}" == "up" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
-	prepareLocalFilter
+	prepareSaveFilters
 	prepareFilter
 	getTypeOfRemote
 	uploadSaves
@@ -397,6 +413,7 @@ fi
 if [ "${direction}" == "down" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
+	prepareSaveFilters
 	prepareFilter
 	getTypeOfRemote
 	downloadSaves
