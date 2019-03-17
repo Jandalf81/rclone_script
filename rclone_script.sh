@@ -136,17 +136,9 @@ function getROMFileName ()
 	romfileext="${romfilename#*.}" # extension of $rom
 }
 
-function prepareFilter ()
-{
-	filter="${romfilebase//\[/\\[}"
-	filter="${filter//\]/\\]}"
-}
-
-# Builds a filter compatible with Find
+# Builds patterns compatible with find and rclone
 function prepareSaveFilters ()
-{
-	log 3 "emu_settings: ${emu_settings}"
-	
+{	
 	# Read in any extensions
 	extensions=$(xmlstarlet sel -t -m "emulators/emulator[name='${emulator}']/saveFileExtensions" -v "ext" "${emu_settings}")
 	
@@ -154,15 +146,17 @@ function prepareSaveFilters ()
 	if [ -z "${extensions// }" ]
 	then
 
+		log 3 "Using default save file filter for emulator: ${emulator}"
+
 		# Default to "<ROM_name>.*"
 		localFilter="${romfilebase//\[/\\[}"
-		localFilter="${localFilter//\]/\\]}"
+		localFilter="${localFilter//\]/\\]}.*"
 		remoteFilter="${localFilter}"
 
 	else
 
 		# Otherwise, build custom filters
-		log 3 "Custom save extentions defined for emulator: ${emulator}"
+		log 2 "Custom save extentions defined for emulator: ${emulator}"
 		i=0
 
 		# Build the filters for the extensions
@@ -172,25 +166,20 @@ function prepareSaveFilters ()
 			then
 
 				remoteFilter="{*.${ext}"
-				localFilter="\( -iname '*.${ext}'"
+				localFilter+=("-iname" "*.${ext}")
 				((i++))
 			
 			else
 				
-				localFilter="${localFilter} -o -iname '*.${ext}'"
-				remoteFilter="${remoteFilter}, *.${ext}"
-			
+				remoteFilter="${remoteFilter},*.${ext}"
+				localFilter+=("-o" "-iname" "*.${ext}")
 			fi
 
 		done <<< ${extensions}
 
-		localFilter="${localFilter} \)"
 		remoteFilter="${remoteFilter}}"
 
 	fi
-
-	log 3 "Local save file filter: ${localFilter}"
-	log 3 "Remote save file filter: ${remoteFilter}"
 }
 
 function getTypeOfRemote ()
@@ -273,7 +262,7 @@ function downloadSaves ()
 	fi
 	
 	# test for remote files
-	remotefiles=$(rclone lsf retropie:${remotebasedir}/${system} --include "${filter}.*")
+	remotefiles=$(rclone lsf retropie:${remotebasedir}/${system} --include "${remoteFilter}")
 	retval=$?
 	
 	if [ "${retval}" = "0" ]
@@ -287,7 +276,7 @@ function downloadSaves ()
 			log 2 "Found remote files"
 			
 			# download saves and states to corresponding ROM
-			rclone copy retropie:${remotebasedir}/${system} ~/RetroPie/saves/${system} --include "${filter}.*" --update >> ${logfile}
+			rclone copy retropie:${remotebasedir}/${system} ~/RetroPie/saves/${system} --include "${remoteFilter}" --update >> ${logfile}
 			retval=$?
 			
 			if [ "${retval}" = "0" ]
@@ -331,7 +320,7 @@ function uploadSaves ()
 		return
 	fi
 
-	localfiles=$(find ~/RetroPie/saves/${system} -type f -iname "${filter}.*")
+	localfiles=$(find ~/RetroPie/saves/${system} -type f "${localFilter[@]}")
 	
 	if [ "${localfiles}" = "" ]
 	then # no local files found
@@ -339,7 +328,7 @@ function uploadSaves ()
 		showNotification "Uploading saves and states to ${remoteType}... No local files found"
 	else # local files found
 		# upload saves and states to corresponding ROM
-		rclone copy ~/RetroPie/saves/${system} retropie:${remotebasedir}/${system} --include "${filter}.*" --update >> ${logfile}
+		rclone copy ~/RetroPie/saves/${system} retropie:${remotebasedir}/${system} --include "${remoteFilter}" --update >> ${logfile}
 		retval=$?
 		
 		if [ "${retval}" = "0" ]
@@ -405,7 +394,6 @@ if [ "${direction}" == "up" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
 	prepareSaveFilters
-	prepareFilter
 	getTypeOfRemote
 	uploadSaves
 fi
@@ -414,7 +402,6 @@ if [ "${direction}" == "down" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
 	prepareSaveFilters
-	prepareFilter
 	getTypeOfRemote
 	downloadSaves
 fi
