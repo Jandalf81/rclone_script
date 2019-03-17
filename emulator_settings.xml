@@ -8,6 +8,7 @@
             <ext>SYS</ext>
             <ext>PNG</ext>
             <ext>SFO</ext>
+            <ext>state</ext>
         </saveFileExtensions>
     </emulator>
 </emulators>
