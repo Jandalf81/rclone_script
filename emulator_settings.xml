@@ -2,6 +2,15 @@
 <emulators>
     <emulator>
         <name>lr-ppsspp</name>
+        <saveFileExtensions>
+            <ext>SYS</ext>
+            <ext>PNG</ext>
+            <ext>SFO</ext>
+            <ext>state</ext>
+        </saveFileExtensions>
+    </emulator>
+    <emulator>
+        <name>ppsspp</name>
         <saveFilePath>/opt/retropie/configs/psp/PSP/SAVEDATA</saveFilePath>
         <saveStatePath>/opt/retropie/configs/psp/PSP/PPSSPP_STATE</saveStatePath>
         <saveFileExtensions>

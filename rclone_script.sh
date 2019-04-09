@@ -12,7 +12,7 @@ UNDERLINE=$(tput smul)
 # include settings file
 config=~/scripts/rclone_script/rclone_script.ini
 source ${config}
-logLevel=2
+logLevel=3
 
 # include emulator specific settings
 emu_settings=~/scripts/rclone_script/emulator_settings.xml
@@ -136,6 +136,23 @@ function getROMFileName ()
 	romfileext="${romfilename#*.}" # extension of $rom
 }
 
+function getSaveFilePath ()
+{
+	saveFilePath=$(xmlstarlet sel -t -m "emulators/emulator[name='${emulator}']" -v "saveFilePath" "${emu_settings}")
+	
+	# If no save file path specified
+	if [ -z "${saveFilePath// }" ]
+	then
+
+		log 3 "Using default save file path for emulator: ${emulator}"
+
+		# Default to the normal saves directory
+		saveFilePath="~/RetroPie/saves/${system}"
+	fi
+
+	log 3 "Save file path: ${saveFilePath}"
+}
+
 # Builds patterns compatible with find and rclone
 function prepareSaveFilters ()
 {	
@@ -156,7 +173,7 @@ function prepareSaveFilters ()
 	else
 
 		# Otherwise, build custom filters
-		log 2 "Custom save extentions defined for emulator: ${emulator}"
+		log 3 "Custom save extentions defined for emulator: ${emulator}"
 		i=0
 
 		# Build the filters for the extensions
@@ -276,7 +293,7 @@ function downloadSaves ()
 			log 2 "Found remote files"
 			
 			# download saves and states to corresponding ROM
-			rclone copy retropie:${remotebasedir}/${system} ~/RetroPie/saves/${system} --include "${remoteFilter}" --update >> ${logfile}
+			rclone copy retropie:${remotebasedir}/${system} ${saveFilePath} --include "${remoteFilter}" --update >> ${logfile}
 			retval=$?
 			
 			if [ "${retval}" = "0" ]
@@ -320,7 +337,7 @@ function uploadSaves ()
 		return
 	fi
 
-	localfiles=$(find ~/RetroPie/saves/${system} -type f "${localFilter[@]}")
+	localfiles=$(find ${saveFilePath} -type f "${localFilter[@]}")
 	
 	if [ "${localfiles}" = "" ]
 	then # no local files found
@@ -328,7 +345,7 @@ function uploadSaves ()
 		showNotification "Uploading saves and states to ${remoteType}... No local files found"
 	else # local files found
 		# upload saves and states to corresponding ROM
-		rclone copy ~/RetroPie/saves/${system} retropie:${remotebasedir}/${system} --include "${remoteFilter}" --update >> ${logfile}
+		rclone copy ${saveFilePath} retropie:${remotebasedir}/${system} --include "${remoteFilter}" --update >> ${logfile}
 		retval=$?
 		
 		if [ "${retval}" = "0" ]
@@ -394,6 +411,7 @@ if [ "${direction}" == "up" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
 	prepareSaveFilters
+	getSaveFilePath
 	getTypeOfRemote
 	uploadSaves
 fi
@@ -402,6 +420,7 @@ if [ "${direction}" == "down" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
 	prepareSaveFilters
+	getSaveFilePath
 	getTypeOfRemote
 	downloadSaves
 fi
