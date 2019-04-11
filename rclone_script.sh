@@ -12,7 +12,7 @@ UNDERLINE=$(tput smul)
 # include settings file
 config=~/scripts/rclone_script/rclone_script.ini
 source ${config}
-logLevel=3
+logLevel=2
 
 # include emulator specific settings
 emu_settings=~/scripts/rclone_script/emulator_settings.xml
