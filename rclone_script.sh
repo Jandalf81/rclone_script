@@ -169,6 +169,7 @@ function prepareSaveFilters ()
 		localFilter="${romfilebase//\[/\\[}"
 		localFilter="${localFilter//\]/\\]}.*"
 		remoteFilter="${localFilter}"
+		localFilter=("-iname" "${localFilter}")
 
 	else
 
@@ -336,7 +337,7 @@ function uploadSaves ()
 		
 		return
 	fi
-
+	
 	localfiles=$(find ${saveFilePath} -type f "${localFilter[@]}")
 	
 	if [ "${localfiles}" = "" ]
