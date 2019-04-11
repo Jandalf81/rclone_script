@@ -18,7 +18,7 @@ UNDERLINE="\Zu"
 
 # global variables
 url="https://raw.githubusercontent.com/Dannflower/rclone_script"
-branch="psp-save-support"
+branch="master"
 
 # configuration variables
 remotebasedir=""
