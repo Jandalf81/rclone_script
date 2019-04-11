@@ -13,9 +13,6 @@
         <name>ppsspp</name>
         <saveFilePath>/opt/retropie/configs/psp/</saveFilePath>
         <saveStatePath>/opt/retropie/configs/psp/PSP/PPSSPP_STATE</saveFilePath>
-        <saveStateFileExtensions enable="true">
-            <ext>state</ext>
-        </saveStateFileExtensions>
         <saveFileExtensions>
             <ext>SYS</ext>
             <ext>PNG</ext>
