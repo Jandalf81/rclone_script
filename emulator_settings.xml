@@ -11,7 +11,7 @@
     </emulator>
     <emulator>
         <name>ppsspp</name>
-        <saveFilePath>/opt/retropie/configs/psp/PSP/SAVEDATA</saveFilePath>
+        <saveFilePath>/opt/retropie/configs/psp/</saveFilePath>
         <saveStatePath>/opt/retropie/configs/psp/PSP/PPSSPP_STATE</saveStatePath>
         <saveFileExtensions>
             <ext>SYS</ext>

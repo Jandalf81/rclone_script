@@ -147,7 +147,7 @@ function getSaveFilePath ()
 		log 3 "Using default save file path for emulator: ${emulator}"
 
 		# Default to the normal saves directory
-		saveFilePath="~/RetroPie/saves/${system}"
+		saveFilePath=~/RetroPie/saves/${system}
 	fi
 
 	log 3 "Save file path: ${saveFilePath}"
