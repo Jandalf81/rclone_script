@@ -14,6 +14,9 @@ config=~/scripts/rclone_script/rclone_script.ini
 source ${config}
 logLevel=2
 
+# include emulator specific settings
+emu_settings=~/scripts/rclone_script/emulator_settings.xml
+
 
 # parameters
 direction="$1"
@@ -133,16 +136,74 @@ function getROMFileName ()
 	romfileext="${romfilename#*.}" # extension of $rom
 }
 
-function prepareFilter ()
+function getSaveFilePath ()
 {
-	filter="${romfilebase//\[/\\[}"
-	filter="${filter//\]/\\]}"
+	saveFilePath=$(xmlstarlet sel -t -m "emulators/emulator[name='${emulator}']" -v "saveFilePath" "${emu_settings}")
+	
+	# If no save file path specified
+	if [ -z "${saveFilePath// }" ]
+	then
+
+		log 3 "Using default save file path for emulator: ${emulator}"
+
+		# Default to the normal saves directory
+		saveFilePath=~/RetroPie/saves/${system}
+	fi
+
+	log 3 "Save file path: ${saveFilePath}"
+}
+
+# Builds patterns compatible with find and rclone
+function prepareSaveFilters ()
+{	
+	# Read in any extensions
+	extensions=$(xmlstarlet sel -t -m "emulators/emulator[name='${emulator}']/saveFileExtensions" -v "ext" "${emu_settings}")
+	
+	# If no extensions were defined
+	if [ -z "${extensions// }" ]
+	then
+
+		log 3 "Using default save file filter for emulator: ${emulator}"
+
+		# Default to "<ROM_name>.*"
+		localFilter="${romfilebase//\[/\\[}"
+		localFilter="${localFilter//\]/\\]}.*"
+		remoteFilter="${localFilter}"
+		localFilter=("-iname" "${localFilter}")
+
+	else
+
+		# Otherwise, build custom filters
+		log 3 "Custom save extentions defined for emulator: ${emulator}"
+		i=0
+
+		# Build the filters for the extensions
+		while read ext; do
+
+			if [ "${i}" -eq "0" ]
+			then
+
+				remoteFilter="{*.${ext}"
+				localFilter+=("-iname" "*.${ext}")
+				((i++))
+			
+			else
+				
+				remoteFilter="${remoteFilter},*.${ext}"
+				localFilter+=("-o" "-iname" "*.${ext}")
+			fi
+
+		done <<< ${extensions}
+
+		remoteFilter="${remoteFilter}}"
+
+	fi
 }
 
 function getTypeOfRemote ()
 {
 	# list all remotes and their type
-	remotes=$(rclone listremotes -l)
+	remotes=$(rclone listremotes --long)
 	
 	# get line with RETROPIE remote
 	retval=$(grep -i "^retropie:" <<< ${remotes})
@@ -219,7 +280,7 @@ function downloadSaves ()
 	fi
 	
 	# test for remote files
-	remotefiles=$(rclone lsf retropie:${remotebasedir}/${system} --include "${filter}.*")
+	remotefiles=$(rclone lsf retropie:${remotebasedir}/${system} --include "${remoteFilter}")
 	retval=$?
 	
 	if [ "${retval}" = "0" ]
@@ -233,7 +294,7 @@ function downloadSaves ()
 			log 2 "Found remote files"
 			
 			# download saves and states to corresponding ROM
-			rclone copy retropie:${remotebasedir}/${system} ~/RetroPie/saves/${system} --include "${filter}.*" --update >> ${logfile}
+			rclone copy retropie:${remotebasedir}/${system} ${saveFilePath} --include "${remoteFilter}" --update >> ${logfile}
 			retval=$?
 			
 			if [ "${retval}" = "0" ]
@@ -276,8 +337,8 @@ function uploadSaves ()
 		
 		return
 	fi
-
-	localfiles=$(find ~/RetroPie/saves/${system} -type f -iname "${filter}.*")
+	
+	localfiles=$(find ${saveFilePath} -type f "${localFilter[@]}")
 	
 	if [ "${localfiles}" = "" ]
 	then # no local files found
@@ -285,7 +346,7 @@ function uploadSaves ()
 		showNotification "Uploading saves and states to ${remoteType}... No local files found"
 	else # local files found
 		# upload saves and states to corresponding ROM
-		rclone copy ~/RetroPie/saves/${system} retropie:${remotebasedir}/${system} --include "${filter}.*" --update >> ${logfile}
+		rclone copy ${saveFilePath} retropie:${remotebasedir}/${system} --include "${remoteFilter}" --update >> ${logfile}
 		retval=$?
 		
 		if [ "${retval}" = "0" ]
@@ -350,7 +411,8 @@ log 3 "romfileext: ${romfileext}"
 if [ "${direction}" == "up" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
-	prepareFilter
+	prepareSaveFilters
+	getSaveFilePath
 	getTypeOfRemote
 	uploadSaves
 fi
@@ -358,7 +420,8 @@ fi
 if [ "${direction}" == "down" ] && [ "${system}" != "kodi" ]
 then
 	getROMFileName
-	prepareFilter
+	prepareSaveFilters
+	getSaveFilePath
 	getTypeOfRemote
 	downloadSaves
 fi

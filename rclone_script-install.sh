@@ -107,7 +107,7 @@ function dialogShowProgress ()
 function dialogShowSummary ()
 {
 	# list all remotes and their type
-	remotes=$(rclone listremotes -l)
+	remotes=$(rclone listremotes --long)
 	
 	# get line with RETROPIE remote
 	retval=$(grep -i "^retropie:" <<< ${remotes})
@@ -647,7 +647,8 @@ function 4aGetRCLONE_SCRIPT ()
 		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script.sh --append-output="${logfile}" &&
 		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-menu.sh --append-output="${logfile}" &&
 		wget -N -P ~/scripts/rclone_script ${url}/${branch}/rclone_script-uninstall.sh --append-output="${logfile}" &&
-		
+		wget -N -P ~/scripts/rclone_script ${url}/${branch}/emulator_settings.xml --append-output="${logfile}" &&
+
 		# change mod
 		chmod +x ~/scripts/rclone_script/rclone_script.sh >> "${logfile}" &&
 		chmod +x ~/scripts/rclone_script/rclone_script-menu.sh >> "${logfile}" &&
